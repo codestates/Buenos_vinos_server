@@ -1,16 +1,16 @@
 ---
 name: Task Card
 about: Describe this issue template's purpose here.
-title: ''
+title: '[Server] Feature / 제목'
 labels: ''
 assignees: ''
 
 ---
 
 ### ISSUE
-- Group:  `client`, `server`, `sr`
-- Type: `bug`, `feature`, `delete`
-- Detail: fix actions from client redux
+- Group:  `server`
+- Type: `feature`, `bug`,  `delete`
+- Detail: 자세한 내용을 입력해주세요
 
 ### TODO
 1. [ ] Job1
@@ -28,6 +28,6 @@ assignees: ''
 
 ### Labels
 - Estimated time: `E: 1h`
-- Group : `client`, `server`
+- Group : `server`
 - Sprint: `Sprint__NUMBER__`
 - Urgency: `High`, `Middle`, `Low`
