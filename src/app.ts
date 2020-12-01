@@ -17,7 +17,10 @@ createConnection()
         //
         // Implement middlewares
         app.use(cors({
-            origin: 'http://localhost:3000',
+            origin: [
+                'http://localhost:3000',
+                'http://54.180.150.63:3000'
+            ],
             methods: ['GET', 'POST', 'OPTIONS'],
             credentials: true,
           }));
