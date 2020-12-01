@@ -1,14 +1,35 @@
-import express, { Request, Response, NextFunction } from "express";
-import router from "./router/router";
+import { createConnection } from 'typeorm';
+import * as express from 'express';
+import { Response, Request } from 'express';
+import * as bodyParser from 'body-parser';
+import * as helmet from 'helmet';
+import * as cors from 'cors';
 
-const app = express();
+import routes from './routes';
 
-app.get("/", (request: Request, response: Response, next: NextFunction) => {
-  response.send("hello");
-});
+const port = process.env.PORT || 3000;
+const app: express.Application = express();
 
-app.use("/router", router);
 
-app.listen(3000, () => {
-  console.log("start");
-});
+//Connects to the Database -> then starts the express
+createConnection()
+    .then(async connection => {
+        //
+        // Implement middlewares
+        app.use(cors({
+            origin: 'http://localhost:3000',
+            methods: ['GET', 'POST', 'OPTIONS'],
+            credentials: true,
+          }));
+        app.use(helmet());
+        app.use(bodyParser.json());
+
+        // Sets all routes
+        app.use('/', routes);
+
+        // Start server
+        app.listen(port, () => {
+            console.log(`Server started on port http://localhost:${port}`);
+        });
+    })
+    .catch(error => console.log(error));
