@@ -1,11 +1,12 @@
 {
-  "compilerOptions":{
-    "target":"es6",
-    "module":"commonjs",
-    "outDir":"./dist",
-    "rootDir":"./src",
-    "strict": true,
-    "moduleResolution":"node",
-    "esModuleInterop":true
-   }
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom"],
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "./build", //ts compile했을때 생기는 js파일을 저장할 디렉토리
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictNullChecks" : false
   }
+}
