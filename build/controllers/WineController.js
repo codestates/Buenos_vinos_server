@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var typeorm_1 = require("typeorm");
 var Wine_1 = require("../entity/Wine");
 var WineController = /** @class */ (function () {
     function WineController() {
@@ -50,6 +51,31 @@ var WineController = /** @class */ (function () {
                 case 1:
                     wines = _a.sent();
                     res.json(wines);
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    WineController.filteringWine = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, filteredWine;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    max_sweet = req.query.sweet_max;
+                    min_sweet = req.query.sweet_min;
+                    min_acidic = req.query.acidic_min;
+                    max_acidic = req.query.acidic_max;
+                    min_body = req.query.body_min;
+                    max_body = req.query.body_max;
+                    return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine).find({
+                            where: {
+                                sweet: typeorm_1.Between(min_sweet, max_sweet),
+                                acidic: typeorm_1.Between(min_acidic, max_acidic),
+                                body: typeorm_1.Between(min_body, max_body)
+                            }
+                        })];
+                case 1:
+                    filteredWine = _a.sent();
+                    res.json(filteredWine);
                     return [2 /*return*/];
             }
         });
