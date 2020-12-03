@@ -24,13 +24,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Wine = void 0;
 var typeorm_1 = require("typeorm");
+var Type_1 = require("./Type");
+var country_1 = require("./country");
 var Wine = /** @class */ (function (_super) {
     __extends(Wine, _super);
     function Wine() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Wine.prototype.calculrateRating = function () {
-        this.rating = (this.rating_sum / this.rating_count).toFixed(1);
+        this.rating = this.rating_sum / this.rating_count;
+        // this.rating = (this.rating_sum / this.rating_count).toFixed(1)
     };
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
@@ -96,14 +99,25 @@ var Wine = /** @class */ (function (_super) {
     ], Wine.prototype, "createdAt", void 0);
     __decorate([
         typeorm_1.Column(),
-        __metadata("design:type", String)
+        __metadata("design:type", Number)
     ], Wine.prototype, "rating", void 0);
     __decorate([
+        typeorm_1.BeforeInsert(),
+        typeorm_1.BeforeUpdate(),
+        typeorm_1.AfterInsert(),
         typeorm_1.AfterLoad(),
         __metadata("design:type", Function),
         __metadata("design:paramtypes", []),
         __metadata("design:returntype", void 0)
     ], Wine.prototype, "calculrateRating", null);
+    __decorate([
+        typeorm_1.OneToMany(function (type) { return Type_1.Type; }, function (type) { return type.wine; }),
+        __metadata("design:type", Array)
+    ], Wine.prototype, "type", void 0);
+    __decorate([
+        typeorm_1.OneToMany(function (country) { return country_1.Country; }, function (country) { return country.wine; }),
+        __metadata("design:type", Array)
+    ], Wine.prototype, "country", void 0);
     Wine = __decorate([
         typeorm_1.Entity({
             name: 'wine',

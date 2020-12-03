@@ -7,7 +7,15 @@ import {
     UpdateDateColumn,
     BaseEntity,
     AfterLoad,
+    OneToMany,
+    BeforeInsert,
+    BeforeUpdate,
+    AfterInsert,
+    AfterUpdate
 } from 'typeorm';
+
+import { Type } from './Type'
+import { Country } from './country'
 
 @Entity({
     name: 'wine',
@@ -60,12 +68,22 @@ export class Wine extends BaseEntity {
       })
     createdAt: Date;
     
+    
     @Column()
-    rating: string;
+    rating: number;
 
+    @BeforeInsert()
+    @BeforeUpdate()
+    @AfterInsert()
     @AfterLoad()
     calculrateRating() {
-        this.rating = (this.rating_sum / this.rating_count).toFixed(1)
-        
+        this.rating = this.rating_sum / this.rating_count
+        // this.rating = (this.rating_sum / this.rating_count).toFixed(1)
     }
+
+    @OneToMany((type) => Type, (type) => type.wine)
+    type: Type[];
+
+    @OneToMany((country) => Country, (country) => country.wine)
+    country: Country[];
  }
