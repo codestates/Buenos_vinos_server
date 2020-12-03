@@ -45,9 +45,11 @@ var WineController = /** @class */ (function () {
         var wines;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, Wine_1.Wine.find({
-                        select: ["id", "wine", "wine_kr", "image", "body", "sweet", "acidic", "alcohol_content", "winery", "content", "rating_sum", "rating_count", "rating"]
-                    })];
+                case 0: return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine)
+                        .createQueryBuilder("wine")
+                        .leftJoinAndSelect("wine.type", "type")
+                        .leftJoinAndSelect("wine.country", "country")
+                        .getMany()];
                 case 1:
                     wines = _a.sent();
                     res.json(wines);
@@ -56,7 +58,7 @@ var WineController = /** @class */ (function () {
         });
     }); };
     WineController.filteringWine = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, filteredWine;
+        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, filteredWine;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -66,13 +68,23 @@ var WineController = /** @class */ (function () {
                     max_acidic = req.query.acidic_max;
                     min_body = req.query.body_min;
                     max_body = req.query.body_max;
-                    return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine).find({
-                            where: {
-                                sweet: typeorm_1.Between(min_sweet, max_sweet),
-                                acidic: typeorm_1.Between(min_acidic, max_acidic),
-                                body: typeorm_1.Between(min_body, max_body)
-                            }
-                        })];
+                    type = req.query.type;
+                    country = req.query.country;
+                    rating = req.query.rating;
+                    return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine)
+                            .createQueryBuilder("wine")
+                            .leftJoinAndSelect("wine.type", "type")
+                            .leftJoinAndSelect("wine.country", "country")
+                            .andWhere('wine.sweet >= :min_sweet', { min_sweet: min_sweet })
+                            .andWhere('wine.sweet <= :max_sweet', { max_sweet: max_sweet })
+                            .andWhere('wine.acidic >= :min_acidic', { min_acidic: min_acidic })
+                            .andWhere('wine.acidic <= :max_acidic', { max_acidic: max_acidic })
+                            .andWhere('wine.body >= :min_body', { min_body: min_body })
+                            .andWhere('wine.body <= :max_body', { max_body: max_body })
+                            .andWhere('type.type = :type', { type: type })
+                            .andWhere('country.country = :country', { country: country })
+                            // .andWhere('wine.rating => :rating', {rating: rating})
+                            .getMany()];
                 case 1:
                     filteredWine = _a.sent();
                     res.json(filteredWine);

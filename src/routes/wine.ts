@@ -3,8 +3,8 @@ import WineController from '../controllers/WineController';
 
 const router = Router();
 
-router.get('/', WineController.listAll);
+router.get('/all', WineController.listAll);
 
-router.get('/filter', WineController.filteringWine)
+router.get('/', WineController.filteringWine)
 
 export default router;

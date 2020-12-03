@@ -6,6 +6,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BaseEntity,
+    OneToMany
 } from 'typeorm';
 import { Length, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
@@ -55,6 +56,7 @@ export class User extends BaseEntity {
       })
       createdAt: Date;
 
+    
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8);
     }
