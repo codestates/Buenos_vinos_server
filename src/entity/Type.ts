@@ -4,7 +4,8 @@ import {
     ManyToOne,
     BaseEntity,
     PrimaryGeneratedColumn,
-    Column
+    Column,
+    OneToMany
 } from 'typeorm';
 
 import { Wine } from './Wine'
@@ -17,7 +18,7 @@ export class Type extends BaseEntity {
     id: number;
 
     @Column()
-    type: string;
+    name: string;
 
     @Column({
         type: "longtext"
@@ -39,8 +40,8 @@ export class Type extends BaseEntity {
     })
     body_content: string;
 
-    @ManyToOne(
-        (type) => Wine,
-        (wine) => wine.types_id, {onDelete: 'CASCADE'})
-    wine: Wine
+    @OneToMany((wine) => Wine, (wine) => wine.type)
+    wine: Wine[];
+
+
  }

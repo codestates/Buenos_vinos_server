@@ -37,14 +37,14 @@ var Country = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Country.prototype, "country", void 0);
+    ], Country.prototype, "name", void 0);
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
     ], Country.prototype, "image", void 0);
     __decorate([
-        typeorm_1.ManyToOne(function (type) { return Wine_1.Wine; }, function (wine) { return wine.country; }, { onDelete: 'CASCADE' }),
-        __metadata("design:type", Wine_1.Wine)
+        typeorm_1.OneToMany(function (wine) { return Wine_1.Wine; }, function (wine) { return wine.country; }),
+        __metadata("design:type", Array)
     ], Country.prototype, "wine", void 0);
     Country = __decorate([
         typeorm_1.Entity({

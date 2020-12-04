@@ -22,55 +22,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Type = void 0;
+exports.Food = void 0;
 var typeorm_1 = require("typeorm");
-var Wine_1 = require("./Wine");
-var Type = /** @class */ (function (_super) {
-    __extends(Type, _super);
-    function Type() {
+var Food = /** @class */ (function (_super) {
+    __extends(Food, _super);
+    function Food() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
-    ], Type.prototype, "id", void 0);
+    ], Food.prototype, "id", void 0);
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Type.prototype, "name", void 0);
+    ], Food.prototype, "name", void 0);
     __decorate([
-        typeorm_1.Column({
-            type: "longtext"
-        }),
+        typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Type.prototype, "type_content", void 0);
-    __decorate([
-        typeorm_1.Column({
-            type: "longtext"
-        }),
-        __metadata("design:type", String)
-    ], Type.prototype, "sweet_content", void 0);
-    __decorate([
-        typeorm_1.Column({
-            type: "longtext"
-        }),
-        __metadata("design:type", String)
-    ], Type.prototype, "acidic_content", void 0);
-    __decorate([
-        typeorm_1.Column({
-            type: "longtext"
-        }),
-        __metadata("design:type", String)
-    ], Type.prototype, "body_content", void 0);
-    __decorate([
-        typeorm_1.OneToMany(function (wine) { return Wine_1.Wine; }, function (wine) { return wine.type; }),
-        __metadata("design:type", Array)
-    ], Type.prototype, "wine", void 0);
-    Type = __decorate([
+    ], Food.prototype, "image", void 0);
+    Food = __decorate([
         typeorm_1.Entity({
-            name: 'type',
+            name: 'food',
         })
-    ], Type);
-    return Type;
+    ], Food);
+    return Food;
 }(typeorm_1.BaseEntity));
-exports.Type = Type;
+exports.Food = Food;

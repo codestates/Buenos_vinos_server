@@ -4,15 +4,14 @@ import {
     BaseEntity,
     PrimaryGeneratedColumn,
     Column,
-    OneToMany
+    ManyToMany
 } from 'typeorm';
-
 import { Wine } from './Wine'
 
 @Entity({
-    name: 'country',
+    name: 'food',
 })
-export class Country extends BaseEntity { 
+export class Food extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -22,6 +21,4 @@ export class Country extends BaseEntity {
     @Column()
     image: string;
 
-    @OneToMany((wine) => Wine, (wine) => wine.country)
-    wine: Wine[];
 }

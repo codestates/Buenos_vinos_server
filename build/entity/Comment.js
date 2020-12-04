@@ -22,76 +22,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Comment = void 0;
 var typeorm_1 = require("typeorm");
-var class_validator_1 = require("class-validator");
-var bcrypt = require("bcryptjs");
-var Comment_1 = require("./Comment");
-var User = /** @class */ (function (_super) {
-    __extends(User, _super);
-    function User() {
+var User_1 = require("./User");
+var Wine_1 = require("./Wine");
+var Comment = /** @class */ (function (_super) {
+    __extends(Comment, _super);
+    function Comment() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    User.prototype.hashPassword = function () {
-        this.password = bcrypt.hashSync(this.password, 8);
-    };
-    User.prototype.checkIfUnencryptedPasswordIsValid = function (unencryptedPassword) {
-        return bcrypt.compareSync(unencryptedPassword, this.password);
-    };
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
         __metadata("design:type", Number)
-    ], User.prototype, "id", void 0);
+    ], Comment.prototype, "id", void 0);
+    __decorate([
+        typeorm_1.ManyToOne(function (comment) { return Wine_1.Wine; }, function (wine) { return wine.comment; }, { cascade: ["insert", "update", "remove"] }),
+        __metadata("design:type", Wine_1.Wine)
+    ], Comment.prototype, "wine", void 0);
+    __decorate([
+        typeorm_1.ManyToOne(function (comment) { return User_1.User; }, function (user) { return user.comment; }, { cascade: ["insert", "update", "remove"] }),
+        __metadata("design:type", User_1.User)
+    ], Comment.prototype, "user", void 0);
+    __decorate([
+        typeorm_1.Column({
+            type: "longtext"
+        }),
+        __metadata("design:type", String)
+    ], Comment.prototype, "content", void 0);
     __decorate([
         typeorm_1.Column(),
-        class_validator_1.Length(4, 20),
-        __metadata("design:type", String)
-    ], User.prototype, "email", void 0);
-    __decorate([
-        typeorm_1.Column({
-            unique: true
-        }),
-        __metadata("design:type", String)
-    ], User.prototype, "nickname", void 0);
-    __decorate([
-        typeorm_1.Column(),
-        class_validator_1.Length(4, 100),
-        __metadata("design:type", String)
-    ], User.prototype, "password", void 0);
-    __decorate([
-        typeorm_1.Column({
-            nullable: true
-        }),
-        __metadata("design:type", String)
-    ], User.prototype, "google", void 0);
-    __decorate([
-        typeorm_1.Column({
-            nullable: true
-        }),
-        __metadata("design:type", String)
-    ], User.prototype, "facebook", void 0);
-    __decorate([
-        typeorm_1.Column({
-            nullable: true
-        }),
-        __metadata("design:type", String)
-    ], User.prototype, "kakao", void 0);
+        __metadata("design:type", Number)
+    ], Comment.prototype, "rating", void 0);
     __decorate([
         typeorm_1.CreateDateColumn({
             name: "created_at"
         }),
         __metadata("design:type", Date)
-    ], User.prototype, "createdAt", void 0);
-    __decorate([
-        typeorm_1.OneToMany(function (comment) { return Comment_1.Comment; }, function (comment) { return comment.user; }),
-        __metadata("design:type", Array)
-    ], User.prototype, "comment", void 0);
-    User = __decorate([
+    ], Comment.prototype, "createdAt", void 0);
+    Comment = __decorate([
         typeorm_1.Entity({
-            name: 'user',
-        }),
-        typeorm_1.Unique(['email'])
-    ], User);
-    return User;
+            name: 'comment',
+        })
+    ], Comment);
+    return Comment;
 }(typeorm_1.BaseEntity));
-exports.User = User;
+exports.Comment = Comment;
