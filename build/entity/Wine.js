@@ -26,6 +26,9 @@ exports.Wine = void 0;
 var typeorm_1 = require("typeorm");
 var Type_1 = require("./Type");
 var country_1 = require("./country");
+var food_1 = require("./food");
+var User_1 = require("./User");
+var Comment_1 = require("./Comment");
 var Wine = /** @class */ (function (_super) {
     __extends(Wine, _super);
     function Wine() {
@@ -33,7 +36,6 @@ var Wine = /** @class */ (function (_super) {
     }
     Wine.prototype.calculrateRating = function () {
         this.rating = this.rating_sum / this.rating_count;
-        // this.rating = (this.rating_sum / this.rating_count).toFixed(1)
     };
     __decorate([
         typeorm_1.PrimaryGeneratedColumn(),
@@ -42,19 +44,15 @@ var Wine = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Wine.prototype, "wine", void 0);
+    ], Wine.prototype, "name", void 0);
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Wine.prototype, "wine_kr", void 0);
+    ], Wine.prototype, "name_en", void 0);
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
     ], Wine.prototype, "image", void 0);
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", Number)
-    ], Wine.prototype, "types_id", void 0);
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", Number)
@@ -69,10 +67,6 @@ var Wine = /** @class */ (function (_super) {
     ], Wine.prototype, "acidic", void 0);
     __decorate([
         typeorm_1.Column(),
-        __metadata("design:type", Number)
-    ], Wine.prototype, "counties_id", void 0);
-    __decorate([
-        typeorm_1.Column(),
         __metadata("design:type", String)
     ], Wine.prototype, "alcohol_content", void 0);
     __decorate([
@@ -80,7 +74,9 @@ var Wine = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], Wine.prototype, "winery", void 0);
     __decorate([
-        typeorm_1.Column(),
+        typeorm_1.Column({
+            type: "longtext"
+        }),
         __metadata("design:type", String)
     ], Wine.prototype, "content", void 0);
     __decorate([
@@ -98,7 +94,12 @@ var Wine = /** @class */ (function (_super) {
         __metadata("design:type", Date)
     ], Wine.prototype, "createdAt", void 0);
     __decorate([
-        typeorm_1.Column(),
+        typeorm_1.Column({
+            type: 'decimal',
+            precision: 5,
+            scale: 1,
+            default: 0
+        }),
         __metadata("design:type", Number)
     ], Wine.prototype, "rating", void 0);
     __decorate([
@@ -111,13 +112,31 @@ var Wine = /** @class */ (function (_super) {
         __metadata("design:returntype", void 0)
     ], Wine.prototype, "calculrateRating", null);
     __decorate([
-        typeorm_1.OneToMany(function (type) { return Type_1.Type; }, function (type) { return type.wine; }),
-        __metadata("design:type", Array)
+        typeorm_1.ManyToOne(function (wine) { return Type_1.Type; }, function (type) { return type.wine; }, { onDelete: 'CASCADE' }),
+        __metadata("design:type", Type_1.Type)
     ], Wine.prototype, "type", void 0);
     __decorate([
-        typeorm_1.OneToMany(function (country) { return country_1.Country; }, function (country) { return country.wine; }),
-        __metadata("design:type", Array)
+        typeorm_1.ManyToOne(function (wine) { return country_1.Country; }, function (country) { return country.wine; }, { onDelete: 'CASCADE' }),
+        __metadata("design:type", country_1.Country)
     ], Wine.prototype, "country", void 0);
+    __decorate([
+        typeorm_1.ManyToMany(function () { return food_1.Food; }),
+        typeorm_1.JoinTable({
+            name: 'wine_food'
+        }),
+        __metadata("design:type", Array)
+    ], Wine.prototype, "food", void 0);
+    __decorate([
+        typeorm_1.ManyToMany(function () { return User_1.User; }, { cascade: ["insert", "update", "remove"] }),
+        typeorm_1.JoinTable({
+            name: 'wishlist'
+        }),
+        __metadata("design:type", Array)
+    ], Wine.prototype, "user", void 0);
+    __decorate([
+        typeorm_1.OneToMany(function (comment) { return Comment_1.Comment; }, function (comment) { return comment.wine; }),
+        __metadata("design:type", Array)
+    ], Wine.prototype, "comment", void 0);
     Wine = __decorate([
         typeorm_1.Entity({
             name: 'wine',
