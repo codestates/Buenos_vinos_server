@@ -30,6 +30,8 @@ class WineController {
         const country = req.query.country
         const rating = req.query.rating
         const food = req.query.food
+        const name = req.query.name
+        const neme_en = req.query.name_en
 
         
         const filteredWine = await getRepository(Wine)
@@ -37,14 +39,16 @@ class WineController {
             .leftJoinAndSelect("wine.type", "type")
             .leftJoinAndSelect("wine.country", "country")
             .leftJoinAndSelect("wine.food", "food")
+            .andWhere(name ? 'wine.name LIKE :name' : '1=1', { name: `%${name}%` })
+            .andWhere(neme_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${neme_en}%`})
             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1' , { min_sweet: min_sweet})
             .andWhere(max_sweet ? 'wine.sweet <= :max_sweet' : '1=1' , { max_sweet: max_sweet })
             .andWhere(min_acidic ? 'wine.acidic >= :min_acidic' : '1=1' , { min_acidic: min_acidic})
             .andWhere(max_acidic ? 'wine.acidic <= :max_acidic' : '1=1', { max_acidic: max_acidic })
             .andWhere(min_body ? 'wine.body >= :min_body' : '1=1' , { min_body: min_body})
             .andWhere(max_body ? 'wine.body <= :max_body' : '1=1' , { max_body: max_body })
-            .andWhere(type ? 'type.name = :t' : '1=1' , { t: type })
-            .andWhere(country ? 'country.name = :c' : '1=1', {c: country})
+            .andWhere(type ? 'type.name IN (:...t)' : '1=1' , { t: type })
+            .andWhere(country ? 'country.name IN (:...c)' : '1=1', {c: country})
             .andWhere(rating ? 'wine.rating >= :rating' : '1=1' , { rating: rating })
             .andWhere(food ? 'food.name IN (:...f)' : '1=1', { f: food })
             .getMany()
