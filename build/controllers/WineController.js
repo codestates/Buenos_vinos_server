@@ -49,6 +49,7 @@ var WineController = /** @class */ (function () {
                         .createQueryBuilder("wine")
                         .leftJoinAndSelect("wine.type", "type")
                         .leftJoinAndSelect("wine.country", "country")
+                        .leftJoinAndSelect("wine.food", "food")
                         .getMany()];
                 case 1:
                     wines = _a.sent();
@@ -58,7 +59,7 @@ var WineController = /** @class */ (function () {
         });
     }); };
     WineController.filteringWine = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, filteredWine;
+        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, food, filteredWine;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -71,19 +72,22 @@ var WineController = /** @class */ (function () {
                     type = req.query.type;
                     country = req.query.country;
                     rating = req.query.rating;
+                    food = req.query.food;
                     return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine)
                             .createQueryBuilder("wine")
                             .leftJoinAndSelect("wine.type", "type")
                             .leftJoinAndSelect("wine.country", "country")
-                            .andWhere('wine.sweet >= :min_sweet', { min_sweet: min_sweet })
-                            .andWhere('wine.sweet <= :max_sweet', { max_sweet: max_sweet })
-                            .andWhere('wine.acidic >= :min_acidic', { min_acidic: min_acidic })
-                            .andWhere('wine.acidic <= :max_acidic', { max_acidic: max_acidic })
-                            .andWhere('wine.body >= :min_body', { min_body: min_body })
-                            .andWhere('wine.body <= :max_body', { max_body: max_body })
-                            .andWhere('type.type = :type', { type: type })
-                            .andWhere('country.country = :country', { country: country })
-                            // .andWhere('wine.rating => :rating', {rating: rating})
+                            .leftJoinAndSelect("wine.food", "food")
+                            .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1', { min_sweet: min_sweet })
+                            .andWhere(max_sweet ? 'wine.sweet <= :max_sweet' : '1=1', { max_sweet: max_sweet })
+                            .andWhere(min_acidic ? 'wine.acidic >= :min_acidic' : '1=1', { min_acidic: min_acidic })
+                            .andWhere(max_acidic ? 'wine.acidic <= :max_acidic' : '1=1', { max_acidic: max_acidic })
+                            .andWhere(min_body ? 'wine.body >= :min_body' : '1=1', { min_body: min_body })
+                            .andWhere(max_body ? 'wine.body <= :max_body' : '1=1', { max_body: max_body })
+                            .andWhere(type ? 'type.name = :t' : '1=1', { t: type })
+                            .andWhere(country ? 'country.name = :c' : '1=1', { c: country })
+                            .andWhere(rating ? 'wine.rating >= :rating' : '1=1', { rating: rating })
+                            .andWhere(food ? 'food.name IN (:...f)' : '1=1', { f: food })
                             .getMany()];
                 case 1:
                     filteredWine = _a.sent();

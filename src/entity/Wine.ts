@@ -6,16 +6,23 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BaseEntity,
+    ManyToOne,
     AfterLoad,
     OneToMany,
     BeforeInsert,
     BeforeUpdate,
     AfterInsert,
-    AfterUpdate
+    AfterUpdate,
+    ManyToMany,
+    JoinTable
 } from 'typeorm';
 
 import { Type } from './Type'
 import { Country } from './country'
+import { Food } from './food';
+import { User } from './User'
+import { Comment } from './Comment';
+
 
 @Entity({
     name: 'wine',
@@ -25,16 +32,13 @@ export class Wine extends BaseEntity {
     id: number;
 
     @Column()
-    wine: string;
+    name: string;
 
     @Column()
-    wine_kr: string;
+    name_en: string;
 
     @Column()
     image: string;
-
-    @Column()
-    types_id: number;
 
     @Column()
     body: number;
@@ -46,15 +50,14 @@ export class Wine extends BaseEntity {
     acidic: number;
 
     @Column()
-    counties_id: number;
-
-    @Column()
     alcohol_content: string;
 
     @Column()
     winery: string;
 
-    @Column()
+    @Column({
+        type: "longtext"
+    })
     content: string;
 
     @Column()
@@ -68,8 +71,12 @@ export class Wine extends BaseEntity {
       })
     createdAt: Date;
     
-    
-    @Column()
+    @Column({
+        type: 'decimal',
+        precision: 5,
+        scale: 1,
+        default: 0
+    })
     rating: number;
 
     @BeforeInsert()
@@ -78,12 +85,30 @@ export class Wine extends BaseEntity {
     @AfterLoad()
     calculrateRating() {
         this.rating = this.rating_sum / this.rating_count
-        // this.rating = (this.rating_sum / this.rating_count).toFixed(1)
     }
 
-    @OneToMany((type) => Type, (type) => type.wine)
-    type: Type[];
+    @ManyToOne(
+        (wine) => Type,
+        (type) => type.wine, { onDelete: 'CASCADE' })
+        type: Type
 
-    @OneToMany((country) => Country, (country) => country.wine)
-    country: Country[];
+    @ManyToOne(
+        (wine) => Country,
+        (country) => country.wine, { onDelete: 'CASCADE' })
+        country: Country
+    
+    @ManyToMany(() => Food)
+    @JoinTable({
+        name: 'wine_food'
+    })
+    food: Food[];
+
+    @ManyToMany(() => User, { cascade: ["insert", "update", "remove"]})
+    @JoinTable({
+        name: 'wishlist'
+    })
+    user: User[]
+
+    @OneToMany((comment) => Comment, (comment) => comment.wine)
+    comment: Comment[];
  }

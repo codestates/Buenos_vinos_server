@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Length, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
+import {Comment} from './Comment'
 
 @Entity({
     name: 'user',
@@ -18,9 +19,7 @@ import * as bcrypt from 'bcryptjs';
     
 export class User extends BaseEntity {
     //
-    @PrimaryGeneratedColumn({
-        name: 'id_user',
-    })
+    @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
@@ -54,7 +53,10 @@ export class User extends BaseEntity {
     @CreateDateColumn({
         name: "created_at"
       })
-      createdAt: Date;
+    createdAt: Date;
+    
+    @OneToMany((comment) => Comment, (comment) => comment.user)
+    comment: Comment[];
 
     
     hashPassword() {
