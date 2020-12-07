@@ -127,7 +127,7 @@ var Wine = /** @class */ (function (_super) {
         __metadata("design:type", Array)
     ], Wine.prototype, "food", void 0);
     __decorate([
-        typeorm_1.ManyToMany(function () { return User_1.User; }, { cascade: ["insert", "update", "remove"] }),
+        typeorm_1.ManyToMany(function () { return User_1.User; }, function (user) { return user.wine; }, { cascade: ["insert", "update", "remove"] }),
         typeorm_1.JoinTable({
             name: 'wishlist'
         }),

@@ -26,6 +26,7 @@ exports.User = void 0;
 var typeorm_1 = require("typeorm");
 var class_validator_1 = require("class-validator");
 var bcrypt = require("bcryptjs");
+var Wine_1 = require("./Wine");
 var Comment_1 = require("./Comment");
 var User = /** @class */ (function (_super) {
     __extends(User, _super);
@@ -86,6 +87,10 @@ var User = /** @class */ (function (_super) {
         typeorm_1.OneToMany(function (comment) { return Comment_1.Comment; }, function (comment) { return comment.user; }),
         __metadata("design:type", Array)
     ], User.prototype, "comment", void 0);
+    __decorate([
+        typeorm_1.ManyToMany(function () { return Wine_1.Wine; }, function (wine) { return wine.user; }),
+        __metadata("design:type", Array)
+    ], User.prototype, "wine", void 0);
     User = __decorate([
         typeorm_1.Entity({
             name: 'user',
