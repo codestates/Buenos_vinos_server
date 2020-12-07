@@ -4,6 +4,7 @@ import { Response, Request } from 'express';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
 import * as cors from 'cors';
+import * as cookieParser from 'cookie-parser'
 
 import routes from './routes';
 
@@ -26,6 +27,7 @@ createConnection()
           }));
         app.use(helmet());
         app.use(bodyParser.json());
+        app.use(cookieParser())
 
         // Sets all routes
         app.use('/', routes);

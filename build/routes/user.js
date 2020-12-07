@@ -4,14 +4,14 @@ var express_1 = require("express");
 var UserController_1 = require("../controllers/UserController");
 var checkJwt_1 = require("../middlewares/checkJwt");
 var router = express_1.Router();
-//Get all users
-router.get('/', [checkJwt_1.checkJwt], UserController_1.default.listAll);
 // Get one user
-router.get('/:id([0-9]+)', [checkJwt_1.checkJwt], UserController_1.default.getOneById);
+router.get('/', [checkJwt_1.checkJwt], UserController_1.default.getOneById);
 //Create a new user
 router.post('/', UserController_1.default.newUser);
 //Edit one user
-router.patch('/:id([0-9]+)', [checkJwt_1.checkJwt], UserController_1.default.editUser);
+router.patch('/', [checkJwt_1.checkJwt], UserController_1.default.editUser);
 //Delete one user
-router.delete('/:id([0-9]+)', [checkJwt_1.checkJwt], UserController_1.default.deleteUser);
+router.delete('/', [checkJwt_1.checkJwt], UserController_1.default.deleteUser);
+//logout userauthorization
+router.get('/logout', UserController_1.default.logoutUser);
 exports.default = router;

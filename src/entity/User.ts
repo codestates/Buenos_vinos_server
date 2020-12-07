@@ -6,11 +6,16 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BaseEntity,
-    OneToMany
+    OneToMany,
+    ManyToMany,
+    JoinTable
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Length, IsNotEmpty } from 'class-validator';
 import * as bcrypt from 'bcryptjs';
-import {Comment} from './Comment'
+import { Wine } from './Wine'
+import { Comment } from './Comment'
+
 
 @Entity({
     name: 'user',
@@ -31,6 +36,7 @@ export class User extends BaseEntity {
     })
     nickname: string;
 
+   
     @Column()
     @Length(4, 100)
     password: string;
@@ -57,6 +63,9 @@ export class User extends BaseEntity {
     
     @OneToMany((comment) => Comment, (comment) => comment.user)
     comment: Comment[];
+
+    @ManyToMany(() => Wine, (wine: Wine) => wine.user)
+    wine: Wine[]
 
     
     hashPassword() {

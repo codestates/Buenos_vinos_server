@@ -18,16 +18,21 @@ class UserController {
 
     static getOneById = async (req: Request, res: Response) => {
         //Get the ID from the url
-        const id = req.params.id;
-
-        try {
-            //Get the user from database
-            const user = await User.findOneOrFail(id, {
-                select: ['id', 'email'], //We dont want to send the password on response
-            });
-        } catch (error) {
-            res.status(404).json('User not found');
-        }
+        const id = req.cookies.userId
+        
+        const userInfo = await getRepository(User)
+            .createQueryBuilder("user")
+            .leftJoinAndSelect("user.comment", "comment")
+            .leftJoinAndSelect("user.wine", "wishlist")
+            .andWhere('user.id = :id', { id: id })
+            .select('user.id')
+            .addSelect('user.email')
+            .addSelect('user.nickname')
+            .addSelect('comment')
+            .addSelect('wishlist')
+            .getOne()
+        
+        res.json(userInfo)
     };
 
     static newUser = async (req: Request, res: Response) => {
@@ -57,7 +62,7 @@ class UserController {
             //Try to save. If fails, the username is already in use
             await User.save(user);
         } catch (e) {
-            res.status(409).json('username already in use');
+            res.status(409).json('이미 존재하는 별명입니다');
             return;
         }
 
@@ -67,24 +72,19 @@ class UserController {
 
     static editUser = async (req: Request, res: Response) => {
         //Get the ID from the url
-        const id = req.params.id;
+        const id = req.cookies.userId;
 
         //Get values from the body
-        const { username, role } = req.body;
+        const { nickname } = req.body;
 
         let user;
         //Try to find user on database
-        try {
+        
             user = await User.findOneOrFail(id);
-        } catch (error) {
-            //If not found, send a 404 response
-            res.status(404).json('User not found');
-            return;
-        }
+         
 
         //Validate the new values on model
-        user.username = username;
-        user.role = role;
+        user.nickname = nickname;
         const errors = await validate(user);
         if (errors.length > 0) {
             res.status(400).json(errors);
@@ -95,16 +95,17 @@ class UserController {
         try {
             await User.save(user);
         } catch (e) {
-            res.status(409).json('username already in use');
+            res.status(409).json('이미 존재하는 별명입니다');
             return;
         }
-        //After all send a 204 (no content, but accepted) response
-        res.status(204).json('User updated');
+        //After all send a 204 (no content, but accepted) response 204로 보내면 res.json이 안간다
+        // res.status(204).json('정보가 업데이트 되었습니다');
+        res.status(200).json('유저 정보가 변경되었습니다')
     };
 
     static deleteUser = async (req: Request, res: Response) => {
         //Get the ID from the url
-        const id = req.params.id;
+        const id = req.cookies.userId;
 
         let user: User;
         try {
@@ -116,7 +117,15 @@ class UserController {
         User.delete(id);
 
         //After all send a 204 (no content, but accepted) response
-        res.status(204).json('User deleted');
+        res.status(200).json('유저정보가 삭제되었습니다');
+    };
+
+    static logoutUser = async (req: Request, res: Response) => {
+
+        let user: User
+
+        res.clearCookie('authorization')
+        res.status(200).send('logout OK')
     };
 }
 

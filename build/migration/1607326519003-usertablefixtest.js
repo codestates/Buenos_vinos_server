@@ -36,39 +36,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var typeorm_1 = require("typeorm");
-var express = require("express");
-var bodyParser = require("body-parser");
-var helmet = require("helmet");
-var cors = require("cors");
-var cookieParser = require("cookie-parser");
-var routes_1 = require("./routes");
-var port = process.env.PORT || 3000;
-var app = express();
-//Connects to the Database -> then starts the express
-typeorm_1.createConnection()
-    .then(function (connection) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        //
-        // Implement middlewares
-        app.use(cors({
-            origin: [
-                'http://localhost:3000',
-                'http://54.180.150.63:3000'
-            ],
-            methods: ['GET', 'POST', 'OPTIONS'],
-            credentials: true,
-        }));
-        app.use(helmet());
-        app.use(bodyParser.json());
-        app.use(cookieParser());
-        // Sets all routes
-        app.use('/', routes_1.default);
-        // Start server
-        app.listen(port, function () {
-            console.log("Server started on port http://localhost:" + port);
+exports.usertablefixtest1607326519003 = void 0;
+var usertablefixtest1607326519003 = /** @class */ (function () {
+    function usertablefixtest1607326519003() {
+    }
+    usertablefixtest1607326519003.prototype.up = function (queryRunner) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
         });
-        return [2 /*return*/];
-    });
-}); })
-    .catch(function (error) { return console.log(error); });
+    };
+    usertablefixtest1607326519003.prototype.down = function (queryRunner) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/];
+            });
+        });
+    };
+    return usertablefixtest1607326519003;
+}());
+exports.usertablefixtest1607326519003 = usertablefixtest1607326519003;
