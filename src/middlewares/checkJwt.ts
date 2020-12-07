@@ -9,14 +9,15 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     //Get the jwt token from the head
     let token: string = <string>req.headers['authorization'];
     let jwtPayload;
+    let jwtCookieToken = req.cookies.authorization
 
     //Try to validate the token and get data
     try {
-        jwtPayload = <any>jwt.verify(token.replace('Bearer ', ''), jwtSecret);
+        jwtPayload = <any>jwt.verify(jwtCookieToken.replace('Bearer ', ''), jwtSecret);
         res.locals.jwtPayload = jwtPayload;
     } catch (error) {
         //If token is not valid, respond with 401 (unauthorized)
-        res.status(401).json('unauthorized');
+        res.status(401).json('권한이 없으신데요?');
         return;
     }
 

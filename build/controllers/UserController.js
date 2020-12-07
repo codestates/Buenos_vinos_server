@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var typeorm_1 = require("typeorm");
 var class_validator_1 = require("class-validator");
 var User_1 = require("../entity/User");
 var UserController = /** @class */ (function () {
@@ -58,25 +59,26 @@ var UserController = /** @class */ (function () {
         });
     }); };
     UserController.getOneById = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, user, error_1;
+        var id, userInfo;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    id = req.params.id;
-                    _a.label = 1;
+                    id = req.cookies.userId;
+                    return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
+                            .createQueryBuilder("user")
+                            .leftJoinAndSelect("user.comment", "comment")
+                            .leftJoinAndSelect("user.wine", "wishlist")
+                            .andWhere('user.id = :id', { id: id })
+                            .select('user.id')
+                            .addSelect('user.email')
+                            .addSelect('user.nickname')
+                            .addSelect('comment')
+                            .addSelect('wishlist')
+                            .getOne()];
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, User_1.User.findOneOrFail(id, {
-                            select: ['id', 'email'],
-                        })];
-                case 2:
-                    user = _a.sent();
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_1 = _a.sent();
-                    res.status(404).json('User not found');
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    userInfo = _a.sent();
+                    res.json(userInfo);
+                    return [2 /*return*/];
             }
         });
     }); };
@@ -113,7 +115,7 @@ var UserController = /** @class */ (function () {
                     return [3 /*break*/, 5];
                 case 4:
                     e_1 = _b.sent();
-                    res.status(409).json('username already in use');
+                    res.status(409).json('이미 존재하는 별명입니다');
                     return [2 /*return*/];
                 case 5:
                     //If all ok, send 201 response
@@ -123,59 +125,50 @@ var UserController = /** @class */ (function () {
         });
     }); };
     UserController.editUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, _a, username, role, user, error_2, errors, e_2;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var id, nickname, user, errors, e_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    id = req.params.id;
-                    _a = req.body, username = _a.username, role = _a.role;
-                    _b.label = 1;
-                case 1:
-                    _b.trys.push([1, 3, , 4]);
+                    id = req.cookies.userId;
+                    nickname = req.body.nickname;
                     return [4 /*yield*/, User_1.User.findOneOrFail(id)];
-                case 2:
-                    user = _b.sent();
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_2 = _b.sent();
-                    //If not found, send a 404 response
-                    res.status(404).json('User not found');
-                    return [2 /*return*/];
-                case 4:
+                case 1:
+                    //Try to find user on database
+                    user = _a.sent();
                     //Validate the new values on model
-                    user.username = username;
-                    user.role = role;
+                    user.nickname = nickname;
                     return [4 /*yield*/, class_validator_1.validate(user)];
-                case 5:
-                    errors = _b.sent();
+                case 2:
+                    errors = _a.sent();
                     if (errors.length > 0) {
                         res.status(400).json(errors);
                         return [2 /*return*/];
                     }
-                    _b.label = 6;
-                case 6:
-                    _b.trys.push([6, 8, , 9]);
+                    _a.label = 3;
+                case 3:
+                    _a.trys.push([3, 5, , 6]);
                     return [4 /*yield*/, User_1.User.save(user)];
-                case 7:
-                    _b.sent();
-                    return [3 /*break*/, 9];
-                case 8:
-                    e_2 = _b.sent();
-                    res.status(409).json('username already in use');
+                case 4:
+                    _a.sent();
+                    return [3 /*break*/, 6];
+                case 5:
+                    e_2 = _a.sent();
+                    res.status(409).json('이미 존재하는 별명입니다');
                     return [2 /*return*/];
-                case 9:
-                    //After all send a 204 (no content, but accepted) response
-                    res.status(204).json('User updated');
+                case 6:
+                    //After all send a 204 (no content, but accepted) response 204로 보내면 res.json이 안간다
+                    // res.status(204).json('정보가 업데이트 되었습니다');
+                    res.status(200).json('유저 정보가 변경되었습니다');
                     return [2 /*return*/];
             }
         });
     }); };
     UserController.deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var id, user, error_3;
+        var id, user, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    id = req.params.id;
+                    id = req.cookies.userId;
                     _a.label = 1;
                 case 1:
                     _a.trys.push([1, 3, , 4]);
@@ -184,15 +177,23 @@ var UserController = /** @class */ (function () {
                     user = _a.sent();
                     return [3 /*break*/, 4];
                 case 3:
-                    error_3 = _a.sent();
+                    error_1 = _a.sent();
                     res.status(404).json('User not found');
                     return [2 /*return*/];
                 case 4:
                     User_1.User.delete(id);
                     //After all send a 204 (no content, but accepted) response
-                    res.status(204).json('User deleted');
+                    res.status(200).json('유저정보가 삭제되었습니다');
                     return [2 /*return*/];
             }
+        });
+    }); };
+    UserController.logoutUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var user;
+        return __generator(this, function (_a) {
+            res.clearCookie('authorization');
+            res.status(200).send('logout OK');
+            return [2 /*return*/];
         });
     }); };
     return UserController;

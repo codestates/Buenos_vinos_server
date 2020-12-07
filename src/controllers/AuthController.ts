@@ -34,8 +34,13 @@ class AuthController {
         const token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
             expiresIn: '1h',
         });
-
+        
         //Send the jwt in the response
+        res.cookie('authorization', token, {
+            httpOnly: true
+        })
+        console.log(user.id)
+        res.cookie('userId', user.id)
         res.send(token);
     };
 

@@ -103,7 +103,7 @@ export class Wine extends BaseEntity {
     })
     food: Food[];
 
-    @ManyToMany(() => User, { cascade: ["insert", "update", "remove"]})
+    @ManyToMany(() => User, (user: User) => user.wine, { cascade: ["insert", "update", "remove"]})
     @JoinTable({
         name: 'wishlist'
     })
