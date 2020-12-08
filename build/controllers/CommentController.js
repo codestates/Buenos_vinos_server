@@ -89,12 +89,13 @@ var CommentController = /** @class */ (function () {
         });
     }); };
     CommentController.editComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, content, rating, commentId, comment, WineManager, errors;
+        var _a, content, rating, commentId, comment, WineManager, CommentManager, errors;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _a = req.body, content = _a.content, rating = _a.rating, commentId = _a.commentId;
                     WineManager = typeorm_1.getManager();
+                    CommentManager = typeorm_1.getManager();
                     return [4 /*yield*/, typeorm_1.getRepository(Comment_1.Comment)
                             .createQueryBuilder("comment")
                             .leftJoinAndSelect("comment.wine", "wine")
@@ -108,16 +109,20 @@ var CommentController = /** @class */ (function () {
                     return [4 /*yield*/, WineManager.decrement(Wine_1.Wine, { id: comment.wine.id }, "rating_count", 1)];
                 case 3:
                     _b.sent();
-                    comment.content = content;
-                    comment.rating = rating;
-                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: comment.wine.id }, "rating_sum", rating)];
+                    return [4 /*yield*/, CommentManager.update(Comment_1.Comment, { id: commentId }, { content: content })];
                 case 4:
                     _b.sent();
-                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: comment.wine.id }, "rating_count", 1)];
+                    return [4 /*yield*/, CommentManager.update(Comment_1.Comment, { id: commentId }, { rating: rating })];
                 case 5:
                     _b.sent();
-                    return [4 /*yield*/, class_validator_1.validate(comment)];
+                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: comment.wine.id }, "rating_sum", rating)];
                 case 6:
+                    _b.sent();
+                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: comment.wine.id }, "rating_count", 1)];
+                case 7:
+                    _b.sent();
+                    return [4 /*yield*/, class_validator_1.validate(comment)];
+                case 8:
                     errors = _b.sent();
                     if (errors.length > 0) {
                         res.status(400).json(errors);
