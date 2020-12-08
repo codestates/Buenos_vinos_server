@@ -7,10 +7,10 @@ const router = Router();
 router.post('/', [checkJwt], CommentController.createComment)
 
 //코멘트 수정
-// router.post('/', [checkJwt],)
+router.patch('/', [checkJwt], CommentController.editComment)
 
 //코멘트 삭제
-// router.post('/', [checkJwt],)
+router.delete('/', [checkJwt], CommentController.deleteComment)
 
 
 export default router;

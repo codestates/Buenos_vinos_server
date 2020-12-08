@@ -30,6 +30,7 @@ class UserController {
             .addSelect('user.nickname')
             .addSelect('comment')
             .addSelect('wishlist')
+            .addSelect('comment.wine')
             .getOne()
         
         res.json(userInfo)
