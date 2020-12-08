@@ -36,14 +36,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var class_validator_1 = require("class-validator");
+var Comment_1 = require("../entity/Comment");
 var CommentController = /** @class */ (function () {
     function CommentController() {
     }
     CommentController.createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, comment, rating;
+        var userId, _a, content, rating, wineId, comment, errors, e_1;
         return __generator(this, function (_b) {
-            _a = req.body, comment = _a.comment, rating = _a.rating;
-            return [2 /*return*/];
+            switch (_b.label) {
+                case 0:
+                    userId = req.cookies.userId;
+                    _a = req.body, content = _a.content, rating = _a.rating, wineId = _a.wineId;
+                    comment = new Comment_1.Comment();
+                    comment.content = content;
+                    comment.rating = rating;
+                    comment.user = userId;
+                    comment.wine = wineId;
+                    return [4 /*yield*/, class_validator_1.validate(comment)];
+                case 1:
+                    errors = _b.sent();
+                    if (errors.length > 0) {
+                        res.status(400).json(errors);
+                        return [2 /*return*/];
+                    }
+                    _b.label = 2;
+                case 2:
+                    _b.trys.push([2, 4, , 5]);
+                    return [4 /*yield*/, Comment_1.Comment.save(comment)];
+                case 3:
+                    _b.sent();
+                    return [3 /*break*/, 5];
+                case 4:
+                    e_1 = _b.sent();
+                    res.status(409).json('문제가 있습니다?');
+                    return [2 /*return*/];
+                case 5:
+                    res.status(201).json('코멘트가 작성되었습니다.');
+                    return [2 /*return*/];
+            }
         });
     }); };
     return CommentController;
