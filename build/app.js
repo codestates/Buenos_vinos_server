@@ -56,7 +56,7 @@ typeorm_1.createConnection()
                 'http://localhost:3000',
                 'http://54.180.150.63:3000'
             ],
-            methods: ['GET', 'POST', 'OPTIONS'],
+            methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
             credentials: true,
         }));
         app.use(helmet());

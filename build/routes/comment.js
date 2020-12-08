@@ -7,7 +7,7 @@ var router = express_1.Router();
 //코멘트 작성
 router.post('/', [checkJwt_1.checkJwt], CommentController_1.default.createComment);
 //코멘트 수정
-// router.post('/', [checkJwt],)
+router.patch('/', [checkJwt_1.checkJwt], CommentController_1.default.editComment);
 //코멘트 삭제
-// router.post('/', [checkJwt],)
+router.delete('/', [checkJwt_1.checkJwt], CommentController_1.default.deleteComment);
 exports.default = router;
