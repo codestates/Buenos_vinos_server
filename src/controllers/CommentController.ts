@@ -70,7 +70,7 @@ class CommentController {
             return;
         }
 
-        res.status(200).json('코멘트가 변경되었습니다')
+        res.status(200).json(comment)
     }
 
     static deleteComment = async (req: Request, res: Response) => {
