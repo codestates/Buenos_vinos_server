@@ -76,9 +76,7 @@ var AuthController = /** @class */ (function () {
                         expiresIn: '1h',
                     });
                     //Send the jwt in the response
-                    res.cookie('authorization', token, {
-                        httpOnly: true
-                    });
+                    res.cookie('authorization', token);
                     console.log(user.id);
                     res.cookie('userId', user.id);
                     res.send(token);
