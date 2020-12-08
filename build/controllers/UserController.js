@@ -74,6 +74,7 @@ var UserController = /** @class */ (function () {
                             .addSelect('user.nickname')
                             .addSelect('comment')
                             .addSelect('wishlist')
+                            .addSelect('comment.wine')
                             .getOne()];
                 case 1:
                     userInfo = _a.sent();

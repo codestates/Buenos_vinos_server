@@ -36,43 +36,120 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var typeorm_1 = require("typeorm");
 var class_validator_1 = require("class-validator");
 var Comment_1 = require("../entity/Comment");
+var Wine_1 = require("../entity/Wine");
 var CommentController = /** @class */ (function () {
     function CommentController() {
     }
     CommentController.createComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var userId, _a, content, rating, wineId, comment, errors, e_1;
+        var userId, WineManager, _a, content, rating, wineId, comment, errors, e_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     userId = req.cookies.userId;
+                    WineManager = typeorm_1.getManager();
                     _a = req.body, content = _a.content, rating = _a.rating, wineId = _a.wineId;
+                    //와인 레이팅값 업데이트
+                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: wineId }, "rating_sum", rating)];
+                case 1:
+                    //와인 레이팅값 업데이트
+                    _b.sent();
+                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: wineId }, "rating_count", 1)];
+                case 2:
+                    _b.sent();
                     comment = new Comment_1.Comment();
                     comment.content = content;
                     comment.rating = rating;
                     comment.user = userId;
                     comment.wine = wineId;
                     return [4 /*yield*/, class_validator_1.validate(comment)];
-                case 1:
+                case 3:
                     errors = _b.sent();
                     if (errors.length > 0) {
                         res.status(400).json(errors);
                         return [2 /*return*/];
                     }
-                    _b.label = 2;
-                case 2:
-                    _b.trys.push([2, 4, , 5]);
-                    return [4 /*yield*/, Comment_1.Comment.save(comment)];
-                case 3:
-                    _b.sent();
-                    return [3 /*break*/, 5];
+                    _b.label = 4;
                 case 4:
+                    _b.trys.push([4, 6, , 7]);
+                    return [4 /*yield*/, Comment_1.Comment.save(comment)];
+                case 5:
+                    _b.sent();
+                    return [3 /*break*/, 7];
+                case 6:
                     e_1 = _b.sent();
                     res.status(409).json('문제가 있습니다?');
                     return [2 /*return*/];
-                case 5:
+                case 7:
                     res.status(201).json('코멘트가 작성되었습니다.');
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    CommentController.editComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, content, rating, commentId, comment, WineManager, errors;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _a = req.body, content = _a.content, rating = _a.rating, commentId = _a.commentId;
+                    WineManager = typeorm_1.getManager();
+                    return [4 /*yield*/, typeorm_1.getRepository(Comment_1.Comment)
+                            .createQueryBuilder("comment")
+                            .leftJoinAndSelect("comment.wine", "wine")
+                            .andWhere('comment.id = :id', { id: commentId })
+                            .getOne()];
+                case 1:
+                    comment = _b.sent();
+                    return [4 /*yield*/, WineManager.decrement(Wine_1.Wine, { id: comment.wine.id }, "rating_sum", comment.rating)];
+                case 2:
+                    _b.sent();
+                    return [4 /*yield*/, WineManager.decrement(Wine_1.Wine, { id: comment.wine.id }, "rating_count", 1)];
+                case 3:
+                    _b.sent();
+                    comment.content = content;
+                    comment.rating = rating;
+                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: comment.wine.id }, "rating_sum", rating)];
+                case 4:
+                    _b.sent();
+                    return [4 /*yield*/, WineManager.increment(Wine_1.Wine, { id: comment.wine.id }, "rating_count", 1)];
+                case 5:
+                    _b.sent();
+                    return [4 /*yield*/, class_validator_1.validate(comment)];
+                case 6:
+                    errors = _b.sent();
+                    if (errors.length > 0) {
+                        res.status(400).json(errors);
+                        return [2 /*return*/];
+                    }
+                    res.status(200).json('코멘트가 변경되었습니다');
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    CommentController.deleteComment = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var commentId, comment, WineManager;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    commentId = req.body.commentId;
+                    WineManager = typeorm_1.getManager();
+                    return [4 /*yield*/, typeorm_1.getRepository(Comment_1.Comment)
+                            .createQueryBuilder("comment")
+                            .leftJoinAndSelect("comment.wine", "wine")
+                            .andWhere('comment.id = :id', { id: commentId })
+                            .getOne()];
+                case 1:
+                    comment = _a.sent();
+                    return [4 /*yield*/, WineManager.decrement(Wine_1.Wine, { id: comment.wine.id }, "rating_sum", comment.rating)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, WineManager.decrement(Wine_1.Wine, { id: comment.wine.id }, "rating_count", 1)];
+                case 3:
+                    _a.sent();
+                    Comment_1.Comment.delete(commentId);
+                    res.status(200).json('코멘트가 삭제되었습니다');
                     return [2 /*return*/];
             }
         });
