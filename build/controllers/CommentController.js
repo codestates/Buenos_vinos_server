@@ -128,7 +128,7 @@ var CommentController = /** @class */ (function () {
                         res.status(400).json(errors);
                         return [2 /*return*/];
                     }
-                    res.status(200).json('코멘트가 변경되었습니다');
+                    res.status(200).json(comment);
                     return [2 /*return*/];
             }
         });
