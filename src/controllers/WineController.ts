@@ -30,17 +30,21 @@ class WineController {
         const country = req.query.country
         const rating = req.query.rating
         const food = req.query.food
-        const name = req.query.name
-        const neme_en = req.query.name_en
+        const inpact :any = req.query.name
 
+        var regExp4 = /^[가-힣]+$/
+
+        let wine_kr = ''
+        let wine_en = ''
+        regExp4.test(inpact) ? wine_kr=inpact : wine_en=inpact
         
         const filteredWine = await getRepository(Wine)
             .createQueryBuilder("wine")
             .leftJoinAndSelect("wine.type", "type")
             .leftJoinAndSelect("wine.country", "country")
             .leftJoinAndSelect("wine.food", "food")
-            .andWhere(name ? 'wine.name LIKE :name' : '1=1', { name: `%${name}%` })
-            .andWhere(neme_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${neme_en}%`})
+            .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: `%${wine_kr}%` })
+            .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${wine_en}%`})
             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1' , { min_sweet: min_sweet})
             .andWhere(max_sweet ? 'wine.sweet <= :max_sweet' : '1=1' , { max_sweet: max_sweet })
             .andWhere(min_acidic ? 'wine.acidic >= :min_acidic' : '1=1' , { min_acidic: min_acidic})
