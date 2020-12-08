@@ -46,6 +46,7 @@ class CommentController {
 
         let comment;
         const WineManager = getManager();
+        const CommentManager = getManager();
 
         comment = await getRepository(Comment)
             .createQueryBuilder("comment")
@@ -57,8 +58,8 @@ class CommentController {
         await WineManager.decrement(Wine, {id: comment.wine.id}, "rating_sum", comment.rating);
         await WineManager.decrement(Wine, {id: comment.wine.id}, "rating_count", 1);
 
-        comment.content = content
-        comment.rating = rating
+        await CommentManager.update(Comment, { id: commentId }, { content: content })
+        await CommentManager.update(Comment, {id: commentId}, {rating: rating})
 
         await WineManager.increment(Wine, {id: comment.wine.id}, "rating_sum", rating);
         await WineManager.increment(Wine, {id: comment.wine.id}, "rating_count", 1);
