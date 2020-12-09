@@ -88,9 +88,12 @@ var User = /** @class */ (function (_super) {
         __metadata("design:type", Array)
     ], User.prototype, "comment", void 0);
     __decorate([
-        typeorm_1.ManyToMany(function () { return Wine_1.Wine; }, function (wine) { return wine.user; }),
+        typeorm_1.ManyToMany(function () { return Wine_1.Wine; }, function (wine) { return wine.wishlist; }),
+        typeorm_1.JoinTable({
+            name: "wishlist"
+        }),
         __metadata("design:type", Array)
-    ], User.prototype, "wine", void 0);
+    ], User.prototype, "wishlist", void 0);
     User = __decorate([
         typeorm_1.Entity({
             name: 'user',

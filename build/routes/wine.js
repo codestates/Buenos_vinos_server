@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var WineController_1 = require("../controllers/WineController");
+var checkJwt_1 = require("../middlewares/checkJwt");
 var router = express_1.Router();
-router.get('/all', WineController_1.default.listAll);
+router.post('/wishlist/:id', [checkJwt_1.checkJwt], WineController_1.default.addWishlist);
+router.delete('/wishlist/:id', [checkJwt_1.checkJwt], WineController_1.default.deleteWishlist);
 router.get('/', WineController_1.default.filteringWine);
 exports.default = router;

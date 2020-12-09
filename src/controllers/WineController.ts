@@ -1,23 +1,39 @@
 import { Request, Response } from 'express';
-import { getRepository, MoreThanOrEqual, Not, LessThan, LessThanOrEqual, Between, createQueryBuilder} from 'typeorm';
+import { getRepository, MoreThanOrEqual, Not, LessThan, LessThanOrEqual, Between, createQueryBuilder, getConnection} from 'typeorm';
 import { validate } from 'class-validator';
 
 import { Wine } from '../entity/Wine';
+import { User } from '../entity/User';
 
 
 class WineController {
 
-    static listAll = async (req: Request, res: Response) => {
+    static addWishlist = async (req: Request, res: Response) => {
         //Get users from database
-        const wines = await getRepository(Wine)
-            .createQueryBuilder("wine")
-            .leftJoinAndSelect("wine.type", "type")
-            .leftJoinAndSelect("wine.country", "country")
-            .leftJoinAndSelect("wine.food", "food")
-            .getMany()
+        const wineId = req.params.id
+        const userId = req.cookies.userId
+
+        await getConnection()
+            .createQueryBuilder()
+            .relation(User, "wishlist")
+            .of(userId)
+            .add(wineId)
         
-        res.json(wines);
+        res.status(201).json("위시리스트가 추가되었습니다.")
     };
+
+    static deleteWishlist = async (req: Request, res: Response) => {
+        const wineId = req.params.id
+        const userId = req.cookies.userId
+
+        await getConnection()
+            .createQueryBuilder()
+            .relation(User, "wishlist")
+            .of(userId)
+            .remove(wineId)
+        
+        res.status(201).json("위시리스트가 삭제되었습니다.")
+     }
 
     static filteringWine = async (req: Request, res: Response) => {
         const max_sweet = req.query.sweet_max
@@ -43,6 +59,8 @@ class WineController {
             .leftJoinAndSelect("wine.type", "type")
             .leftJoinAndSelect("wine.country", "country")
             .leftJoinAndSelect("wine.food", "food")
+            .leftJoinAndSelect("wine.comment", "comment")
+            .leftJoinAndSelect("comment.user", "user")
             .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: `%${wine_kr}%` })
             .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${wine_en}%`})
             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1' , { min_sweet: min_sweet})
@@ -55,6 +73,13 @@ class WineController {
             .andWhere(country ? 'country.name IN (:...c)' : '1=1', {c: country})
             .andWhere(rating ? 'wine.rating >= :rating' : '1=1' , { rating: rating })
             .andWhere(food ? 'food.name IN (:...f)' : '1=1', { f: food })
+            .select("wine")
+            .addSelect("type")
+            .addSelect("country")
+            .addSelect("food")
+            .addSelect("comment")
+            .addSelect("user.id")
+            .addSelect("user.nickname")
             .getMany()
 
 
