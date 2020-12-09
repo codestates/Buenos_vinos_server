@@ -64,8 +64,11 @@ export class User extends BaseEntity {
     @OneToMany((comment) => Comment, (comment) => comment.user)
     comment: Comment[];
 
-    @ManyToMany(() => Wine, (wine: Wine) => wine.user)
-    wine: Wine[]
+    @ManyToMany(() => Wine, (wine: Wine) => wine.wishlist)
+    @JoinTable({
+        name: "wishlist"
+    })
+    wishlist: Wine[]
 
     
     hashPassword() {

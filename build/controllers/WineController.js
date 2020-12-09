@@ -38,22 +38,44 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var typeorm_1 = require("typeorm");
 var Wine_1 = require("../entity/Wine");
+var User_1 = require("../entity/User");
 var WineController = /** @class */ (function () {
     function WineController() {
     }
-    WineController.listAll = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var wines;
+    WineController.addWishlist = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var wineId, userId;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine)
-                        .createQueryBuilder("wine")
-                        .leftJoinAndSelect("wine.type", "type")
-                        .leftJoinAndSelect("wine.country", "country")
-                        .leftJoinAndSelect("wine.food", "food")
-                        .getMany()];
+                case 0:
+                    wineId = req.params.id;
+                    userId = req.cookies.userId;
+                    return [4 /*yield*/, typeorm_1.getConnection()
+                            .createQueryBuilder()
+                            .relation(User_1.User, "wishlist")
+                            .of(userId)
+                            .add(wineId)];
                 case 1:
-                    wines = _a.sent();
-                    res.json(wines);
+                    _a.sent();
+                    res.status(201).json("위시리스트가 추가되었습니다.");
+                    return [2 /*return*/];
+            }
+        });
+    }); };
+    WineController.deleteWishlist = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var wineId, userId;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    wineId = req.params.id;
+                    userId = req.cookies.userId;
+                    return [4 /*yield*/, typeorm_1.getConnection()
+                            .createQueryBuilder()
+                            .relation(User_1.User, "wishlist")
+                            .of(userId)
+                            .remove(wineId)];
+                case 1:
+                    _a.sent();
+                    res.status(201).json("위시리스트가 삭제되었습니다.");
                     return [2 /*return*/];
             }
         });
@@ -83,6 +105,8 @@ var WineController = /** @class */ (function () {
                             .leftJoinAndSelect("wine.type", "type")
                             .leftJoinAndSelect("wine.country", "country")
                             .leftJoinAndSelect("wine.food", "food")
+                            .leftJoinAndSelect("wine.comment", "comment")
+                            .leftJoinAndSelect("comment.user", "user")
                             .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: "%" + wine_kr + "%" })
                             .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1', { name_en: "%" + wine_en + "%" })
                             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1', { min_sweet: min_sweet })
@@ -95,6 +119,13 @@ var WineController = /** @class */ (function () {
                             .andWhere(country ? 'country.name IN (:...c)' : '1=1', { c: country })
                             .andWhere(rating ? 'wine.rating >= :rating' : '1=1', { rating: rating })
                             .andWhere(food ? 'food.name IN (:...f)' : '1=1', { f: food })
+                            .select("wine")
+                            .addSelect("type")
+                            .addSelect("country")
+                            .addSelect("food")
+                            .addSelect("comment")
+                            .addSelect("user.id")
+                            .addSelect("user.nickname")
                             .getMany()];
                 case 1:
                     filteredWine = _a.sent();

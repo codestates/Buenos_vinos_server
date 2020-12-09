@@ -23,14 +23,32 @@ class UserController {
         const userInfo = await getRepository(User)
             .createQueryBuilder("user")
             .leftJoinAndSelect("user.comment", "comment")
-            .leftJoinAndSelect("user.wine", "wishlist")
+            .leftJoinAndSelect("user.wishlist", "wishlist")
+            .leftJoinAndSelect("wishlist.type", "type")
+            .leftJoinAndSelect("wishlist.country", "country")
+            .leftJoinAndSelect("wishlist.food", "food")
             .andWhere('user.id = :id', { id: id })
             .select('user.id')
             .addSelect('user.email')
             .addSelect('user.nickname')
             .addSelect('comment')
-            .addSelect('wishlist')
+            .addSelect('wishlist.id')
+            .addSelect('wishlist.name')
+            .addSelect('wishlist.name_en')
+            .addSelect('wishlist.image')
+            .addSelect('wishlist.body')
+            .addSelect('wishlist.sweet')
+            .addSelect('wishlist.acidic')
+            .addSelect('wishlist.alcohol_content')
+            .addSelect('wishlist.winery')
+            .addSelect('wishlist.content')
+            .addSelect('wishlist.rating_sum')
+            .addSelect('wishlist.rating_count')
+            .addSelect('wishlist.rating')
             .addSelect('comment.wine')
+            .addSelect('type.name')
+            .addSelect('country.name')
+            .addSelect('food.name')
             .getOne()
         
         res.json(userInfo)
@@ -47,7 +65,6 @@ class UserController {
         user.facebook = facebook;
         user.kakao = kakao
 
-        // user.role = role;
 
         //Validade if the parameters are ok
         const errors = await validate(user);
@@ -72,7 +89,7 @@ class UserController {
     };
 
     static editUser = async (req: Request, res: Response) => {
-        //Get the ID from the url
+        //Get the ID from the cookie
         const id = req.cookies.userId;
 
         //Get values from the body
