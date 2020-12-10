@@ -76,9 +76,9 @@ var AuthController = /** @class */ (function () {
                         expiresIn: '1h',
                     });
                     //Send the jwt in the response
-                    res.cookie('authorization', token);
+                    res.cookie('authorization', token, { maxAge: 3600 });
                     console.log(user.id);
-                    res.cookie('userId', user.id);
+                    res.cookie('userId', user.id, { maxAge: 3600 });
                     res.send(token);
                     return [2 /*return*/];
             }
