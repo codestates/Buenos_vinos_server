@@ -36,9 +36,9 @@ class AuthController {
         });
         
         //Send the jwt in the response
-        res.cookie('authorization', token)
+        res.cookie('authorization', token, {expires: new Date(Date.now() + 3600)})
         console.log(user.id)
-        res.cookie('userId', user.id)
+        res.cookie('userId', user.id, {expires: new Date(Date.now() + 3600)})
         res.send(token);
     };
 
