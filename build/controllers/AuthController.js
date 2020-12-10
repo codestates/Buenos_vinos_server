@@ -46,7 +46,7 @@ var AuthController = /** @class */ (function () {
     }
     //
     AuthController.login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, email, password, user, error_1, token;
+        var _a, email, password, user, error_1, token, tokenId;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -75,11 +75,15 @@ var AuthController = /** @class */ (function () {
                     token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
                         expiresIn: '1h',
                     });
+                    tokenId = {
+                        authorization: token,
+                        userId: user.id
+                    };
                     //Send the jwt in the response
-                    res.cookie('authorization', token, { expires: new Date(Date.now() + 3600) });
+                    res.cookie('authorization', token, { maxAge: 3600000 });
                     console.log(user.id);
-                    res.cookie('userId', user.id, { expires: new Date(Date.now() + 3600) });
-                    res.send(token);
+                    res.cookie('userId', user.id, { maxAge: 3600000 });
+                    res.json(tokenId);
                     return [2 /*return*/];
             }
         });
