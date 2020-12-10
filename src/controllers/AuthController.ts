@@ -34,12 +34,15 @@ class AuthController {
         const token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
             expiresIn: '1h',
         });
-        
+        let tokenId = {
+            authorization: token,
+            userId: user.id
+        }
         //Send the jwt in the response
-        res.cookie('authorization', token, {expires: new Date(Date.now() + 3600)})
+        res.cookie('authorization', token, {maxAge: 3600000})
         console.log(user.id)
-        res.cookie('userId', user.id, {expires: new Date(Date.now() + 3600)})
-        res.send(token);
+        res.cookie('userId', user.id, {maxAge: 3600000})
+        res.json(tokenId)
     };
 
     static changePassword = async (req: Request, res: Response) => {
