@@ -80,9 +80,9 @@ var AuthController = /** @class */ (function () {
                         userId: user.id
                     };
                     //Send the jwt in the response
-                    res.cookie('authorization', token, { maxAge: 3600000 });
+                    res.cookie('authorization', token, { maxAge: 3600000, sameSite: "none", secure: true });
                     console.log(user.id);
-                    res.cookie('userId', user.id, { maxAge: 3600000 });
+                    res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true });
                     res.json(tokenId);
                     return [2 /*return*/];
             }

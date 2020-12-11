@@ -56,7 +56,8 @@ typeorm_1.createConnection()
                 'http://localhost:3000',
                 'http://54.180.150.63:3000',
                 'http://localhost:3001',
-                'http://buenosvinos-client.s3-website.ap-northeast-2.amazonaws.com'
+                'http://buenosvinos-client.s3-website.ap-northeast-2.amazonaws.com',
+                'https://buenos-vinos.ml'
             ],
             methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
             credentials: true,
