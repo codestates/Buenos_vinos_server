@@ -37,16 +37,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
+var typeorm_1 = require("typeorm");
+var google_auth_library_1 = require("google-auth-library");
 var jwt = require("jsonwebtoken");
 var class_validator_1 = require("class-validator");
 var User_1 = require("../entity/User");
 var jwtSecret = process.env.JWT_SECRET;
+var client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 var AuthController = /** @class */ (function () {
     function AuthController() {
     }
     //
     AuthController.login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, email, password, user, error_1, token, tokenId;
+        var _a, email, password, user, error_1, token, info;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -75,17 +78,95 @@ var AuthController = /** @class */ (function () {
                     token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
                         expiresIn: '1h',
                     });
-                    tokenId = {
-                        authorization: token,
-                        userId: user.id
+                    info = {
+                        userId: user.id,
+                        nickname: user.nickname,
+                        authorization: token
                     };
                     //Send the jwt in the response
-                    res.cookie('authorization', token, { maxAge: 3600000, sameSite: "none", secure: true });
-                    console.log(user.id);
-                    res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true });
-                    res.json(tokenId);
+                    res.status(200).json(info);
                     return [2 /*return*/];
             }
+        });
+    }); };
+    AuthController.googlelogin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        function verify() {
+            return __awaiter(this, void 0, void 0, function () {
+                var ticket, payload, userid, email, name, hash, user, guser, error_2, jwttoken, info;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, client.verifyIdToken({
+                                idToken: token,
+                                audience: process.env.GOOGLE_CLIENT_ID
+                            })];
+                        case 1:
+                            ticket = _a.sent();
+                            payload = ticket.getPayload();
+                            userid = payload['sub'];
+                            console.log('구글 페이로드가 뭐냐?', payload);
+                            console.log('구글 유저아이디는 뭔데?', userid);
+                            email = payload.email;
+                            name = payload.name;
+                            hash = payload.at_hash;
+                            guser = {
+                                email: payload.email,
+                                name: payload.name,
+                                hash: payload.at_hash
+                            };
+                            return [4 /*yield*/, User_1.User.findOne({ where: { email: email } })];
+                        case 2:
+                            if (!!(_a.sent())) return [3 /*break*/, 5];
+                            return [4 /*yield*/, typeorm_1.getConnection()
+                                    .createQueryBuilder()
+                                    .insert()
+                                    .into(User_1.User)
+                                    .values(guser)
+                                    .onConflict("(\"email\") DO NOTHING")
+                                    .execute()];
+                        case 3:
+                            _a.sent();
+                            return [4 /*yield*/, typeorm_1.getConnection()
+                                    .createQueryBuilder()
+                                    .insert()
+                                    .into(User_1.User)
+                                    .values(guser)
+                                    .onConflict("(\"hash\") DO UPDATE SET \"google\" = :google")
+                                    .setParameter("google", guser.hash)
+                                    .execute()];
+                        case 4:
+                            _a.sent();
+                            _a.label = 5;
+                        case 5:
+                            _a.trys.push([5, 7, , 8]);
+                            return [4 /*yield*/, User_1.User.findOneOrFail({ where: { email: email } })];
+                        case 6:
+                            user = _a.sent();
+                            return [3 /*break*/, 8];
+                        case 7:
+                            error_2 = _a.sent();
+                            res.status(401).json('아직 안만들어진거같은데?');
+                            return [3 /*break*/, 8];
+                        case 8:
+                            jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
+                                expiresIn: '1h',
+                            });
+                            info = {
+                                userId: user.id,
+                                nickname: user.nickname,
+                                authorization: jwttoken
+                            };
+                            //Send the jwt in the response
+                            res.status(200).json(info);
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        var token;
+        return __generator(this, function (_a) {
+            token = req.body.token;
+            verify().catch(console.error);
+            return [2 /*return*/];
         });
     }); };
     AuthController.changePassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
