@@ -213,7 +213,8 @@ var UserController = /** @class */ (function () {
         var user;
         return __generator(this, function (_a) {
             res.clearCookie('authorization');
-            res.status(200).send('logout OK');
+            res.clearCookie('userId');
+            res.redirect("/");
             return [2 /*return*/];
         });
     }); };

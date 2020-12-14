@@ -43,19 +43,28 @@ var WineController = /** @class */ (function () {
     function WineController() {
     }
     WineController.addWishlist = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var wineId, userId;
+        var wineId, userId, e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     wineId = req.params.id;
                     userId = req.cookies.userId;
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
                     return [4 /*yield*/, typeorm_1.getConnection()
                             .createQueryBuilder()
                             .relation(User_1.User, "wishlist")
                             .of(userId)
                             .add(wineId)];
-                case 1:
+                case 2:
                     _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    e_1 = _a.sent();
+                    res.status(409).json('이미 위시리스트에 추가된 와인입니다');
+                    return [2 /*return*/];
+                case 4:
                     res.status(201).json("위시리스트가 추가되었습니다.");
                     return [2 /*return*/];
             }

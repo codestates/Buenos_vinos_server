@@ -13,12 +13,17 @@ class WineController {
         const wineId = req.params.id
         const userId = req.cookies.userId
 
+        try{
         await getConnection()
             .createQueryBuilder()
             .relation(User, "wishlist")
             .of(userId)
             .add(wineId)
-        
+        } catch (e) {
+            res.status(409).json('이미 위시리스트에 추가된 와인입니다')
+            return;
+        }
+
         res.status(201).json("위시리스트가 추가되었습니다.")
     };
 
@@ -31,6 +36,8 @@ class WineController {
             .relation(User, "wishlist")
             .of(userId)
             .remove(wineId)
+        
+        
         
         res.status(201).json("위시리스트가 삭제되었습니다.")
      }

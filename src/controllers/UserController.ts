@@ -145,7 +145,10 @@ class UserController {
         let user: User
 
         res.clearCookie('authorization')
-        res.status(200).send('logout OK')
+        res.clearCookie('userId')
+        res.redirect("/")
+        // res.status(200).send('logout OK')
+        
     };
 }
 

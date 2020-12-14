@@ -23,7 +23,8 @@ createConnection()
                 'http://54.180.150.63:3000',
                 'http://localhost:3001',
                 'http://buenosvinos-client.s3-website.ap-northeast-2.amazonaws.com',
-                'https://buenos-vinos.ml'
+                'https://buenos-vinos.ml',
+                'https://api.rss2json.com'
             ],
             methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
             credentials: true,
