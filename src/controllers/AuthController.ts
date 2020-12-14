@@ -6,7 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { validate } from 'class-validator';
 
 import { User } from '../entity/User';
-import { error } from 'console';
+
 const jwtSecret = process.env.JWT_SECRET;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -33,6 +33,14 @@ class AuthController {
             return;
         }
 
+        const userInfo = await getRepository(User)
+            .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wishlist", "wishlist")
+                .andWhere('user.email = :email', { email: email })
+                .select("user.id")
+                .addSelect('wishlist.id')
+                .getOne()
+
         //Sing JWT, valid for 1 hour
         const token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
             expiresIn: '1h',
@@ -40,7 +48,8 @@ class AuthController {
         let info = {
             userId: user.id,
             nickname: user.nickname,
-            authorization: token
+            authorization: token,
+            wishlist: userInfo
         }
         //Send the jwt in the response
         res.status(200).json(info)
@@ -91,10 +100,21 @@ class AuthController {
             const jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
                 expiresIn: '1h',
             });
+
+            let userInfo = await getRepository(User)
+            .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wishlist", "wishlist")
+                .andWhere('user.id = :id', { id: user.id })
+                .select("user.id")
+                .addSelect('wishlist.id')
+                .getOne()
+
+            
             let info = {
                 userId: user.id,
                 nickname: user.nickname,
-                authorization: jwttoken
+                authorization: jwttoken,
+                wishlist: userInfo
             }
             //Send the jwt in the response
             res.status(200).json(info)
@@ -108,7 +128,7 @@ class AuthController {
 
     static changePassword = async (req: Request, res: Response) => {
         //Get ID from JWT
-        const id = res.locals.jwtPayload.userId;
+        const id = req.cookies.userId;
 
         //Get parameters from the body
         const { oldPassword, newPassword } = req.body;
@@ -141,7 +161,7 @@ class AuthController {
         user.hashPassword();
         User.save(user);
 
-        res.status(201).json('user created');
+        res.status(201).json('비밀번호가 변경되었습니다');
     };
 }
 

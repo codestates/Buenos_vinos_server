@@ -9,6 +9,6 @@ router.post('/login', AuthController.login);
 router.post('/login/google', AuthController.googlelogin)
 
 //Change my password
-router.post('/change-password', [checkJwt], AuthController.changePassword);
+router.post('/changepw', [checkJwt], AuthController.changePassword);
 
 export default router;
