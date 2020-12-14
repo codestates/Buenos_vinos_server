@@ -144,8 +144,9 @@ class UserController {
 
         let user: User
 
-        res.clearCookie('authorization')
-        res.clearCookie('userId')
+        res.clearCookie('authorization', { sameSite: "none", secure: true, httpOnly:true })
+        res.clearCookie('userId', { sameSite: "none", secure: true, httpOnly:true })
+        console.log(req.cookies)
         
         // res.send('logout OK').redirect("/")
         res.status(200).send('성공적으로 로그아웃 되었습니다.')
