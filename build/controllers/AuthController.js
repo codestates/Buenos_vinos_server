@@ -92,61 +92,46 @@ var AuthController = /** @class */ (function () {
     AuthController.googlelogin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         function verify() {
             return __awaiter(this, void 0, void 0, function () {
-                var ticket, payload, userid, email, name, hash, user, guser, error_2, jwttoken, info;
+                var ticket, payload, userid, email, name, user, count, user_1, error_2, jwttoken, info;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, client.verifyIdToken({
-                                idToken: token,
+                                idToken: tokenId,
                                 audience: process.env.GOOGLE_CLIENT_ID
                             })];
                         case 1:
                             ticket = _a.sent();
                             payload = ticket.getPayload();
                             userid = payload['sub'];
-                            console.log('구글 페이로드가 뭐냐?', payload);
-                            console.log('구글 유저아이디는 뭔데?', userid);
                             email = payload.email;
                             name = payload.name;
-                            hash = payload.at_hash;
-                            guser = {
-                                email: payload.email,
-                                name: payload.name,
-                                hash: payload.at_hash
-                            };
-                            return [4 /*yield*/, User_1.User.findOne({ where: { email: email } })];
+                            return [4 /*yield*/, GoogleManager.count(User_1.User, { email: email })];
                         case 2:
-                            if (!!(_a.sent())) return [3 /*break*/, 5];
+                            count = _a.sent();
+                            if (!(count < 1)) return [3 /*break*/, 4];
+                            user_1 = new User_1.User();
+                            user_1.email = payload.email;
+                            user_1.nickname = payload.name;
                             return [4 /*yield*/, typeorm_1.getConnection()
                                     .createQueryBuilder()
                                     .insert()
                                     .into(User_1.User)
-                                    .values(guser)
-                                    .onConflict("(\"email\") DO NOTHING")
+                                    .values(user_1)
                                     .execute()];
                         case 3:
                             _a.sent();
-                            return [4 /*yield*/, typeorm_1.getConnection()
-                                    .createQueryBuilder()
-                                    .insert()
-                                    .into(User_1.User)
-                                    .values(guser)
-                                    .onConflict("(\"hash\") DO UPDATE SET \"google\" = :google")
-                                    .setParameter("google", guser.hash)
-                                    .execute()];
+                            _a.label = 4;
                         case 4:
-                            _a.sent();
-                            _a.label = 5;
-                        case 5:
-                            _a.trys.push([5, 7, , 8]);
+                            _a.trys.push([4, 6, , 7]);
                             return [4 /*yield*/, User_1.User.findOneOrFail({ where: { email: email } })];
-                        case 6:
+                        case 5:
                             user = _a.sent();
-                            return [3 /*break*/, 8];
-                        case 7:
+                            return [3 /*break*/, 7];
+                        case 6:
                             error_2 = _a.sent();
                             res.status(401).json('아직 안만들어진거같은데?');
-                            return [3 /*break*/, 8];
-                        case 8:
+                            return [3 /*break*/, 7];
+                        case 7:
                             jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
                                 expiresIn: '1h',
                             });
@@ -162,9 +147,10 @@ var AuthController = /** @class */ (function () {
                 });
             });
         }
-        var token;
+        var tokenId, GoogleManager;
         return __generator(this, function (_a) {
-            token = req.body.token;
+            tokenId = req.body.tokenId;
+            GoogleManager = typeorm_1.getManager();
             verify().catch(console.error);
             return [2 /*return*/];
         });

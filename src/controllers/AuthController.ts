@@ -6,6 +6,7 @@ import * as jwt from 'jsonwebtoken';
 import { validate } from 'class-validator';
 
 import { User } from '../entity/User';
+import { error } from 'console';
 const jwtSecret = process.env.JWT_SECRET;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -43,53 +44,41 @@ class AuthController {
         }
         //Send the jwt in the response
         res.status(200).json(info)
-        // 배포할때는 아래걸로!
-        // res.cookie('authorization', token, {maxAge: 3600000, sameSite: "none", secure: true})
-        // console.log(user.id)
-        // res.cookie('userId', user.id, {maxAge: 3600000, sameSite: "none", secure: true})
-        // res.json(tokenId)
     };
+
     static googlelogin = async (req: Request, res: Response) => { 
-        let { token } = req.body;
+        let { tokenId } = req.body;
+
+        const GoogleManager = getManager();
+
         async function verify() {
             const ticket = await client.verifyIdToken({
-                idToken: token,
+                idToken: tokenId,
                 audience: process.env.GOOGLE_CLIENT_ID
             });
             const payload = ticket.getPayload();
             const userid = payload['sub'];
-            console.log('구글 페이로드가 뭐냐?', payload)
-            console.log('구글 유저아이디는 뭔데?', userid)
             let email = payload.email
             let name = payload.name
-            let hash = payload.at_hash
             let user: User;
             
             // Get user from database
-            let guser = {
-                email: payload.email,
-                name: payload.name,
-                hash: payload.at_hash
-            }
-            if(!await User.findOne({ where: { email } })){
-            await getConnection()
-                .createQueryBuilder()
-                .insert()
-                .into(User)
-                .values(guser)
-                .onConflict(`("email") DO NOTHING`)
-                .execute()
+            
 
+            const count = await GoogleManager.count(User, {email: email})
+
+            if (count < 1) {
+                let user = new User()
+                user.email = payload.email;
+                user.nickname = payload.name;
+                                                
                 await getConnection()
                 .createQueryBuilder()
                 .insert()
                 .into(User)
-                .values(guser)
-                .onConflict(`("hash") DO UPDATE SET "google" = :google`)
-                .setParameter("google", guser.hash)
+                .values(user)
                 .execute()
-            } 
-                
+            }
 
             
             try{
