@@ -140,16 +140,16 @@ class UserController {
         res.status(200).json('유저정보가 삭제되었습니다');
     };
 
-    static logoutUser = async (req: Request, res: Response) => {
+    // static logoutUser = async (req: Request, res: Response) => {
 
-        let user: User
+    //     let user: User
 
-        res.clearCookie('authorization')
-        res.clearCookie('userId')
-        res.redirect("/")
-        // res.status(200).send('logout OK')
+    //     res.clearCookie('authorization')
+    //     res.clearCookie('userId')
+    //     res.redirect("/")
+    //     // res.status(200).send('logout OK')
         
-    };
+    // };
 }
 
 export default UserController;
