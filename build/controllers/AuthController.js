@@ -49,7 +49,7 @@ var AuthController = /** @class */ (function () {
     }
     //
     AuthController.login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, email, password, user, error_1, token, info;
+        var _a, email, password, user, error_1, userInfo, token, info;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -75,13 +75,25 @@ var AuthController = /** @class */ (function () {
                         res.status(401).json('unauthorized');
                         return [2 /*return*/];
                     }
+                    return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
+                            .createQueryBuilder("user")
+                            .leftJoinAndSelect("user.wishlist", "wishlist")
+                            .andWhere('user.email = :email', { email: email })
+                            .select("user.id")
+                            .addSelect('wishlist.id')
+                            .getOne()
+                        //Sing JWT, valid for 1 hour
+                    ];
+                case 5:
+                    userInfo = _b.sent();
                     token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
                         expiresIn: '1h',
                     });
                     info = {
                         userId: user.id,
                         nickname: user.nickname,
-                        authorization: token
+                        authorization: token,
+                        wishlist: userInfo
                     };
                     //Send the jwt in the response
                     res.status(200).json(info);
@@ -92,7 +104,7 @@ var AuthController = /** @class */ (function () {
     AuthController.googlelogin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         function verify() {
             return __awaiter(this, void 0, void 0, function () {
-                var ticket, payload, userid, email, name, user, count, user_1, error_2, jwttoken, info;
+                var ticket, payload, userid, email, name, user, count, user_1, error_2, jwttoken, userInfo, info;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, client.verifyIdToken({
@@ -135,10 +147,20 @@ var AuthController = /** @class */ (function () {
                             jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
                                 expiresIn: '1h',
                             });
+                            return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
+                                    .createQueryBuilder("user")
+                                    .leftJoinAndSelect("user.wishlist", "wishlist")
+                                    .andWhere('user.id = :id', { id: user.id })
+                                    .select("user.id")
+                                    .addSelect('wishlist.id')
+                                    .getOne()];
+                        case 8:
+                            userInfo = _a.sent();
                             info = {
                                 userId: user.id,
                                 nickname: user.nickname,
-                                authorization: jwttoken
+                                authorization: jwttoken,
+                                wishlist: userInfo
                             };
                             //Send the jwt in the response
                             res.status(200).json(info);
@@ -160,7 +182,7 @@ var AuthController = /** @class */ (function () {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    id = res.locals.jwtPayload.userId;
+                    id = req.cookies.userId;
                     _a = req.body, oldPassword = _a.oldPassword, newPassword = _a.newPassword;
                     if (!(oldPassword && newPassword)) {
                         res.status(400).json('bad request');
@@ -195,7 +217,7 @@ var AuthController = /** @class */ (function () {
                     //Hash the new password and save
                     user.hashPassword();
                     User_1.User.save(user);
-                    res.status(201).json('user created');
+                    res.status(201).json('비밀번호가 변경되었습니다');
                     return [2 /*return*/];
             }
         });
