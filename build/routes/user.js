@@ -13,5 +13,5 @@ router.patch('/', [checkJwt_1.checkJwt], UserController_1.default.editUser);
 //Delete one user
 router.delete('/', [checkJwt_1.checkJwt], UserController_1.default.deleteUser);
 //logout userauthorization
-// router.get('/logout', UserController.logoutUser)
+router.get('/logout', UserController_1.default.logoutUser);
 exports.default = router;
