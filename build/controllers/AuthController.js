@@ -93,9 +93,15 @@ var AuthController = /** @class */ (function () {
                         userId: user.id,
                         nickname: user.nickname,
                         authorization: token,
-                        wishlist: userInfo
+                        wishlist: userInfo.wishlist
                     };
                     //Send the jwt in the response
+                    res.cookie('authorization', token);
+                    console.log(user.id);
+                    res.cookie('userId', user.id);
+                    // res.cookie('authorization', token, { maxAge: 3600000, sameSite: "none", secure: true });
+                    // console.log(user.id);
+                    // res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true });
                     res.status(200).json(info);
                     return [2 /*return*/];
             }
@@ -163,6 +169,9 @@ var AuthController = /** @class */ (function () {
                                 wishlist: userInfo
                             };
                             //Send the jwt in the response
+                            res.cookie('authorization', jwttoken, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
+                            console.log(user.id);
+                            res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
                             res.status(200).json(info);
                             return [2 /*return*/];
                     }

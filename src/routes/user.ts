@@ -18,6 +18,6 @@ router.patch('/', [checkJwt], UserController.editUser);
 router.delete('/', [checkJwt], UserController.deleteUser);
 
 //logout userauthorization
-// router.get('/logout', UserController.logoutUser)
+router.get('/logout', UserController.logoutUser)
 
 export default router;
