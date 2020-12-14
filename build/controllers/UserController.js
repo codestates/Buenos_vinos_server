@@ -209,15 +209,6 @@ var UserController = /** @class */ (function () {
             }
         });
     }); };
-    UserController.logoutUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var user;
-        return __generator(this, function (_a) {
-            res.clearCookie('authorization');
-            res.clearCookie('userId');
-            res.redirect("/");
-            return [2 /*return*/];
-        });
-    }); };
     return UserController;
 }());
 exports.default = UserController;

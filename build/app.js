@@ -58,7 +58,8 @@ typeorm_1.createConnection()
                 'http://localhost:3001',
                 'http://buenosvinos-client.s3-website.ap-northeast-2.amazonaws.com',
                 'https://buenos-vinos.ml',
-                'https://api.rss2json.com'
+                'https://api.rss2json.com',
+                'https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Frss.blog.naver.com%2Fwine21com.xml'
             ],
             methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
             credentials: true,
