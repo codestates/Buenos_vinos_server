@@ -49,9 +49,7 @@ var User = /** @class */ (function (_super) {
         __metadata("design:type", String)
     ], User.prototype, "email", void 0);
     __decorate([
-        typeorm_1.Column({
-            unique: true
-        }),
+        typeorm_1.Column(),
         __metadata("design:type", String)
     ], User.prototype, "nickname", void 0);
     __decorate([

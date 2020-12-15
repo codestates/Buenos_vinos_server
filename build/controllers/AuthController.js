@@ -41,6 +41,7 @@ var typeorm_1 = require("typeorm");
 var google_auth_library_1 = require("google-auth-library");
 var jwt = require("jsonwebtoken");
 var class_validator_1 = require("class-validator");
+var axios_1 = require("axios");
 var User_1 = require("../entity/User");
 var jwtSecret = process.env.JWT_SECRET;
 var client = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -161,7 +162,6 @@ var AuthController = /** @class */ (function () {
                             info = {
                                 userId: user.id,
                                 nickname: user.nickname,
-                                authorization: jwttoken,
                                 wishlist: userInfo
                             };
                             //Send the jwt in the response
@@ -180,6 +180,88 @@ var AuthController = /** @class */ (function () {
             GoogleManager = typeorm_1.getManager();
             verify().catch(console.error);
             return [2 /*return*/];
+        });
+    }); };
+    AuthController.kakaologin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var _a, kakao, nickname, KakaoManager, data, email, kakaoNickname, user, config, count, user_2, error_3, jwttoken, userInfo, info;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _a = req.body, kakao = _a.kakao, nickname = _a.nickname;
+                    KakaoManager = typeorm_1.getManager();
+                    data = '';
+                    config = {
+                        method: 'get',
+                        url: 'https://kapi.kakao.com/v2/user/me',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': "Bearer {" + kakao + "}"
+                        },
+                        data: data
+                    };
+                    return [4 /*yield*/, axios_1.default(config)
+                            .then(function (res) {
+                            // console.log("잘 받아오냐이메일",res.data.kakao_account.email)
+                            email = res.data.kakao_account.email;
+                            kakaoNickname = res.data.kakao_account.profile.nickname;
+                        })
+                            .catch(function (error) {
+                            console.log(error);
+                        })];
+                case 1:
+                    _b.sent();
+                    return [4 /*yield*/, KakaoManager.count(User_1.User, { email: email })];
+                case 2:
+                    count = _b.sent();
+                    if (!(count < 1)) return [3 /*break*/, 4];
+                    user_2 = new User_1.User();
+                    user_2.email = email;
+                    user_2.nickname = kakaoNickname;
+                    return [4 /*yield*/, typeorm_1.getConnection()
+                            .createQueryBuilder()
+                            .insert()
+                            .into(User_1.User)
+                            .values(user_2)
+                            .execute()];
+                case 3:
+                    _b.sent();
+                    _b.label = 4;
+                case 4:
+                    _b.trys.push([4, 6, , 7]);
+                    return [4 /*yield*/, User_1.User.findOneOrFail({ where: { email: email } })];
+                case 5:
+                    user = _b.sent();
+                    console.log(user);
+                    return [3 /*break*/, 7];
+                case 6:
+                    error_3 = _b.sent();
+                    res.status(401).json('아직 안만들어진거같은데?');
+                    return [3 /*break*/, 7];
+                case 7:
+                    jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
+                        expiresIn: '1h',
+                    });
+                    return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
+                            .createQueryBuilder("user")
+                            .leftJoinAndSelect("user.wishlist", "wishlist")
+                            .andWhere('user.id = :id', { id: user.id })
+                            .select("user.id")
+                            .addSelect('wishlist.id')
+                            .getOne()];
+                case 8:
+                    userInfo = _b.sent();
+                    info = {
+                        userId: user.id,
+                        nickname: user.nickname,
+                        wishlist: userInfo
+                    };
+                    //Send the jwt in the response
+                    res.cookie('authorization', jwttoken, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
+                    console.log(user.id);
+                    res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
+                    res.status(200).json(info);
+                    return [2 /*return*/];
+            }
         });
     }); };
     AuthController.changePassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
