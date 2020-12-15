@@ -4,8 +4,10 @@ import { getRepository, getConnection, getManager } from 'typeorm';
 import {OAuth2Client} from 'google-auth-library'
 import * as jwt from 'jsonwebtoken';
 import { validate } from 'class-validator';
-
+import axios from 'axios';
 import { User } from '../entity/User';
+
+
 
 const jwtSecret = process.env.JWT_SECRET;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -116,7 +118,6 @@ class AuthController {
             let info = {
                 userId: user.id,
                 nickname: user.nickname,
-                authorization: jwttoken,
                 wishlist: userInfo
             }
             //Send the jwt in the response
@@ -132,6 +133,90 @@ class AuthController {
         
           verify().catch(console.error);
     }
+
+    static kakaologin = async (req: Request, res: Response) => {
+        let { kakao, nickname } = req.body;
+        const KakaoManager = getManager();
+
+        // var axios = require('axios');
+        var data = '';
+        let email
+        let kakaoNickname
+        let user: User;
+
+
+        var config: any= {
+        method: 'get',
+        url: 'https://kapi.kakao.com/v2/user/me',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer {${kakao}}`
+        },
+            data : data
+        };
+
+        await axios(config)
+            .then(res => {
+                // console.log("잘 받아오냐이메일",res.data.kakao_account.email)
+                email = res.data.kakao_account.email
+                kakaoNickname = res.data.kakao_account.profile.nickname
+                
+            })
+            .catch(function (error) {
+            console.log(error);
+            });
+        
+        const count = await KakaoManager.count(User, { email: email })
+        
+        if (count < 1) {
+            
+            let user = new User()
+            user.email = email
+            user.nickname = kakaoNickname
+
+            await getConnection()
+                .createQueryBuilder()
+                .insert()
+                .into(User)
+                .values(user)
+                .execute()
+            
+        }
+
+        try{
+            user = await User.findOneOrFail({ where: { email } });
+            console.log(user)
+        } catch (error) {
+            res.status(401).json('아직 안만들어진거같은데?');
+        }
+
+
+        const jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
+            expiresIn: '1h',
+        });
+
+        const userInfo = await getRepository(User)
+            .createQueryBuilder("user")
+                .leftJoinAndSelect("user.wishlist", "wishlist")
+                .andWhere('user.id = :id', { id: user.id })
+                .select("user.id")
+                .addSelect('wishlist.id')
+                .getOne()
+
+            
+            let info = {
+                userId: user.id,
+                nickname: user.nickname,
+                wishlist: userInfo
+            }
+            //Send the jwt in the response
+            res.cookie('authorization', jwttoken, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly:true });
+            console.log(user.id);
+            res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
+        
+        res.status(200).json(info)
+
+     }
 
     static changePassword = async (req: Request, res: Response) => {
         //Get ID from JWT

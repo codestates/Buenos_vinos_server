@@ -31,9 +31,7 @@ export class User extends BaseEntity {
     @Length(4, 20)
     email: string;
 
-    @Column({
-        unique: true
-    })
+    @Column()
     nickname: string;
 
    
