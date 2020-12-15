@@ -104,7 +104,6 @@ class AuthController {
 
             await axios.get(`https://graph.facebook.com/${facebookId}?fields=id,name,email&access_token=${facebookToken}`)
                 .then(res => {
-                    console.log("너는 뭔데",res)
                     socialEmail = res.data.email
                     name = res.data.name
             }).catch(function (error) {
@@ -138,7 +137,6 @@ class AuthController {
         try {
             // Get user from database
             user = await User.findOneOrFail({ where: { email } });
-            console.log("여기 유저는 잘 되냐", user)
         } catch (error) {
             res.status(401).json('존재하지 않는 유저 입니다');
         }
@@ -169,12 +167,16 @@ class AuthController {
         }
         //Send the jwt in the response
         res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly:true });
-        console.log(user.id);
         res.cookie('userId', user.id, { sameSite: "none", secure: true, httpOnly: true });
+
 
         res.status(200).json(info)
     };
 
+    static islogined = async (req: Request, res: Response) => {
+        res.status(200).json('is logined')
+    }
+    
     static changePassword = async (req: Request, res: Response) => {
         //Get ID from JWT
         const id = req.cookies.userId;
