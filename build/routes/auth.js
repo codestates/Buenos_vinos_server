@@ -8,4 +8,5 @@ var router = express_1.Router();
 router.post('/login', AuthController_1.default.login);
 //Change my password
 router.post('/changepw', [checkJwt_1.checkJwt], AuthController_1.default.changePassword);
+router.get('/', [checkJwt_1.checkJwt], AuthController_1.default.islogined);
 exports.default = router;

@@ -129,7 +129,6 @@ var AuthController = /** @class */ (function () {
                     FacebookManager = typeorm_1.getManager();
                     return [4 /*yield*/, axios_1.default.get("https://graph.facebook.com/" + facebookId + "?fields=id,name,email&access_token=" + facebookToken)
                             .then(function (res) {
-                            console.log("너는 뭔데", res);
                             socialEmail = res.data.email;
                             name_2 = res.data.name;
                         }).catch(function (error) {
@@ -170,7 +169,6 @@ var AuthController = /** @class */ (function () {
                 case 18:
                     // Get user from database
                     user = _b.sent();
-                    console.log("여기 유저는 잘 되냐", user);
                     return [3 /*break*/, 20];
                 case 19:
                     error_1 = _b.sent();
@@ -205,11 +203,16 @@ var AuthController = /** @class */ (function () {
                     };
                     //Send the jwt in the response
                     res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly: true });
-                    console.log(user.id);
                     res.cookie('userId', user.id, { sameSite: "none", secure: true, httpOnly: true });
                     res.status(200).json(info);
                     return [2 /*return*/];
             }
+        });
+    }); };
+    AuthController.islogined = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            res.status(200).json('is logined');
+            return [2 /*return*/];
         });
     }); };
     AuthController.changePassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
