@@ -50,144 +50,42 @@ var AuthController = /** @class */ (function () {
     }
     //
     AuthController.login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, email, password, user, error_1, userInfo, token, info;
+        var _a, email, password, google, kakao, facebookId, facebookToken, socialEmail, GoogleManager, ticket, payload, userid, name_1, user_1, count, user_2, KakaoManager, data, kakaoNickname_1, user_3, config, count, user_4, name_2, FacebookManager, count, user_5, user, error_1, userInfo, token, info;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _a = req.body, email = _a.email, password = _a.password;
-                    if (!(email && password)) {
-                        res.status(400).json('bad request');
-                    }
-                    _b.label = 1;
+                    _a = req.body, email = _a.email, password = _a.password, google = _a.google, kakao = _a.kakao, facebookId = _a.facebookId, facebookToken = _a.facebookToken;
+                    if (!google) return [3 /*break*/, 5];
+                    GoogleManager = typeorm_1.getManager();
+                    return [4 /*yield*/, client.verifyIdToken({
+                            idToken: google,
+                            audience: process.env.GOOGLE_CLIENT_ID
+                        })];
                 case 1:
-                    _b.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, User_1.User.findOneOrFail({ where: { email: email } })];
+                    ticket = _b.sent();
+                    payload = ticket.getPayload();
+                    userid = payload['sub'];
+                    socialEmail = payload.email;
+                    name_1 = payload.name;
+                    return [4 /*yield*/, GoogleManager.count(User_1.User, { email: socialEmail })];
                 case 2:
-                    // Get user from database
-                    user = _b.sent();
-                    return [3 /*break*/, 4];
+                    count = _b.sent();
+                    if (!(count < 1)) return [3 /*break*/, 4];
+                    user_2 = new User_1.User();
+                    user_2.email = payload.email;
+                    user_2.nickname = payload.name;
+                    return [4 /*yield*/, typeorm_1.getConnection()
+                            .createQueryBuilder()
+                            .insert()
+                            .into(User_1.User)
+                            .values(user_2)
+                            .execute()];
                 case 3:
-                    error_1 = _b.sent();
-                    res.status(401).json('unauthorized');
-                    return [3 /*break*/, 4];
-                case 4:
-                    //Check if encrypted password match
-                    if (!user.checkIfUnencryptedPasswordIsValid(password)) {
-                        res.status(401).json('unauthorized');
-                        return [2 /*return*/];
-                    }
-                    return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
-                            .createQueryBuilder("user")
-                            .leftJoinAndSelect("user.wishlist", "wishlist")
-                            .andWhere('user.email = :email', { email: email })
-                            .select("user.id")
-                            .addSelect('wishlist.id')
-                            .getOne()
-                        //Sing JWT, valid for 1 hour
-                    ];
+                    _b.sent();
+                    _b.label = 4;
+                case 4: return [3 /*break*/, 16];
                 case 5:
-                    userInfo = _b.sent();
-                    token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
-                        expiresIn: '1h',
-                    });
-                    info = {
-                        userId: user.id,
-                        nickname: user.nickname,
-                        wishlist: userInfo.wishlist
-                    };
-                    //Send the jwt in the response
-                    res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly: true });
-                    console.log(user.id);
-                    res.cookie('userId', user.id, { sameSite: "none", secure: true, httpOnly: true });
-                    res.status(200).json(info);
-                    return [2 /*return*/];
-            }
-        });
-    }); };
-    AuthController.googlelogin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        function verify() {
-            return __awaiter(this, void 0, void 0, function () {
-                var ticket, payload, userid, email, name, user, count, user_1, error_2, jwttoken, userInfo, info;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, client.verifyIdToken({
-                                idToken: tokenId,
-                                audience: process.env.GOOGLE_CLIENT_ID
-                            })];
-                        case 1:
-                            ticket = _a.sent();
-                            payload = ticket.getPayload();
-                            userid = payload['sub'];
-                            email = payload.email;
-                            name = payload.name;
-                            return [4 /*yield*/, GoogleManager.count(User_1.User, { email: email })];
-                        case 2:
-                            count = _a.sent();
-                            if (!(count < 1)) return [3 /*break*/, 4];
-                            user_1 = new User_1.User();
-                            user_1.email = payload.email;
-                            user_1.nickname = payload.name;
-                            return [4 /*yield*/, typeorm_1.getConnection()
-                                    .createQueryBuilder()
-                                    .insert()
-                                    .into(User_1.User)
-                                    .values(user_1)
-                                    .execute()];
-                        case 3:
-                            _a.sent();
-                            _a.label = 4;
-                        case 4:
-                            _a.trys.push([4, 6, , 7]);
-                            return [4 /*yield*/, User_1.User.findOneOrFail({ where: { email: email } })];
-                        case 5:
-                            user = _a.sent();
-                            return [3 /*break*/, 7];
-                        case 6:
-                            error_2 = _a.sent();
-                            res.status(401).json('아직 안만들어진거같은데?');
-                            return [3 /*break*/, 7];
-                        case 7:
-                            jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
-                                expiresIn: '1h',
-                            });
-                            return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
-                                    .createQueryBuilder("user")
-                                    .leftJoinAndSelect("user.wishlist", "wishlist")
-                                    .andWhere('user.id = :id', { id: user.id })
-                                    .select("user.id")
-                                    .addSelect('wishlist.id')
-                                    .getOne()];
-                        case 8:
-                            userInfo = _a.sent();
-                            info = {
-                                userId: user.id,
-                                nickname: user.nickname,
-                                wishlist: userInfo
-                            };
-                            //Send the jwt in the response
-                            res.cookie('authorization', jwttoken, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
-                            console.log(user.id);
-                            res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
-                            res.status(200).json(info);
-                            return [2 /*return*/];
-                    }
-                });
-            });
-        }
-        var tokenId, GoogleManager;
-        return __generator(this, function (_a) {
-            tokenId = req.body.tokenId;
-            GoogleManager = typeorm_1.getManager();
-            verify().catch(console.error);
-            return [2 /*return*/];
-        });
-    }); };
-    AuthController.kakaologin = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var _a, kakao, nickname, KakaoManager, data, email, kakaoNickname, user, config, count, user_2, error_3, jwttoken, userInfo, info;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    _a = req.body, kakao = _a.kakao, nickname = _a.nickname;
+                    if (!kakao) return [3 /*break*/, 10];
                     KakaoManager = typeorm_1.getManager();
                     data = '';
                     config = {
@@ -201,64 +99,114 @@ var AuthController = /** @class */ (function () {
                     };
                     return [4 /*yield*/, axios_1.default(config)
                             .then(function (res) {
-                            // console.log("잘 받아오냐이메일",res.data.kakao_account.email)
-                            email = res.data.kakao_account.email;
-                            kakaoNickname = res.data.kakao_account.profile.nickname;
+                            socialEmail = res.data.kakao_account.email;
+                            kakaoNickname_1 = res.data.kakao_account.profile.nickname;
                         })
                             .catch(function (error) {
                             console.log(error);
                         })];
-                case 1:
+                case 6:
                     _b.sent();
-                    return [4 /*yield*/, KakaoManager.count(User_1.User, { email: email })];
-                case 2:
+                    return [4 /*yield*/, KakaoManager.count(User_1.User, { email: socialEmail })];
+                case 7:
                     count = _b.sent();
-                    if (!(count < 1)) return [3 /*break*/, 4];
-                    user_2 = new User_1.User();
-                    user_2.email = email;
-                    user_2.nickname = kakaoNickname;
+                    if (!(count < 1)) return [3 /*break*/, 9];
+                    user_4 = new User_1.User();
+                    user_4.email = socialEmail;
+                    user_4.nickname = kakaoNickname_1;
                     return [4 /*yield*/, typeorm_1.getConnection()
                             .createQueryBuilder()
                             .insert()
                             .into(User_1.User)
-                            .values(user_2)
+                            .values(user_4)
                             .execute()];
-                case 3:
+                case 8:
                     _b.sent();
-                    _b.label = 4;
-                case 4:
-                    _b.trys.push([4, 6, , 7]);
+                    _b.label = 9;
+                case 9: return [3 /*break*/, 16];
+                case 10:
+                    if (!(facebookId && facebookToken)) return [3 /*break*/, 15];
+                    FacebookManager = typeorm_1.getManager();
+                    return [4 /*yield*/, axios_1.default.get("https://graph.facebook.com/" + facebookId + "?fields=id,name,email&access_token=" + facebookToken)
+                            .then(function (res) {
+                            console.log("너는 뭔데", res);
+                            socialEmail = res.data.email;
+                            name_2 = res.data.name;
+                        }).catch(function (error) {
+                            console.log(error);
+                        })];
+                case 11:
+                    _b.sent();
+                    return [4 /*yield*/, FacebookManager.count(User_1.User, { email: socialEmail })];
+                case 12:
+                    count = _b.sent();
+                    if (!(count < 1)) return [3 /*break*/, 14];
+                    user_5 = new User_1.User();
+                    user_5.email = socialEmail;
+                    user_5.nickname = name_2;
+                    return [4 /*yield*/, typeorm_1.getConnection()
+                            .createQueryBuilder()
+                            .insert()
+                            .into(User_1.User)
+                            .values(user_5)
+                            .execute()];
+                case 13:
+                    _b.sent();
+                    _b.label = 14;
+                case 14: return [3 /*break*/, 16];
+                case 15:
+                    if (!(email && password)) {
+                        res.status(400).json('아이디와 비밀번호를 입력해 주세요');
+                    }
+                    _b.label = 16;
+                case 16:
+                    if (!email) {
+                        email = socialEmail;
+                    }
+                    _b.label = 17;
+                case 17:
+                    _b.trys.push([17, 19, , 20]);
                     return [4 /*yield*/, User_1.User.findOneOrFail({ where: { email: email } })];
-                case 5:
+                case 18:
+                    // Get user from database
                     user = _b.sent();
-                    console.log(user);
-                    return [3 /*break*/, 7];
-                case 6:
-                    error_3 = _b.sent();
-                    res.status(401).json('아직 안만들어진거같은데?');
-                    return [3 /*break*/, 7];
-                case 7:
-                    jwttoken = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
-                        expiresIn: '1h',
-                    });
+                    console.log("여기 유저는 잘 되냐", user);
+                    return [3 /*break*/, 20];
+                case 19:
+                    error_1 = _b.sent();
+                    res.status(401).json('존재하지 않는 유저 입니다');
+                    return [3 /*break*/, 20];
+                case 20:
+                    //Check if encrypted password match
+                    if (password) {
+                        if (!user.checkIfUnencryptedPasswordIsValid(password)) {
+                            res.status(401).json('비밀번호를 확인해 주세요');
+                            return [2 /*return*/];
+                        }
+                    }
                     return [4 /*yield*/, typeorm_1.getRepository(User_1.User)
                             .createQueryBuilder("user")
                             .leftJoinAndSelect("user.wishlist", "wishlist")
-                            .andWhere('user.id = :id', { id: user.id })
+                            .andWhere('user.email = :email', { email: email })
                             .select("user.id")
                             .addSelect('wishlist.id')
-                            .getOne()];
-                case 8:
+                            .getOne()
+                        //Sing JWT, valid for 1 hour
+                    ];
+                case 21:
                     userInfo = _b.sent();
+                    token = jwt.sign({ userId: user.id, email: user.email }, jwtSecret, {
+                        expiresIn: '1h',
+                    });
                     info = {
                         userId: user.id,
                         nickname: user.nickname,
                         wishlist: userInfo
                     };
                     //Send the jwt in the response
-                    res.cookie('authorization', jwttoken, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
+                    res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly: true });
                     console.log(user.id);
-                    res.cookie('userId', user.id, { maxAge: 3600000, sameSite: "none", secure: true, httpOnly: true });
+                    res.cookie('userId', user.id, { sameSite: "none", secure: true, httpOnly: true });
                     res.status(200).json(info);
                     return [2 /*return*/];
             }
