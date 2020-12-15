@@ -68,6 +68,7 @@ class WineController {
             .leftJoinAndSelect("wine.food", "food")
             .leftJoinAndSelect("wine.comment", "comment")
             .leftJoinAndSelect("comment.user", "user")
+            .leftJoinAndSelect("wine.wishlist", "wishlist")
             .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: `%${wine_kr}%` })
             .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${wine_en}%`})
             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1' , { min_sweet: min_sweet})
@@ -87,6 +88,7 @@ class WineController {
             .addSelect("comment")
             .addSelect("user.id")
             .addSelect("user.nickname")
+            .addSelect("wishlist.id")
             .getMany()
 
 
