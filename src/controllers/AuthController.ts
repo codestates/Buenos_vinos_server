@@ -166,10 +166,8 @@ class AuthController {
             wishlist: userInfo
         }
         //Send the jwt in the response
-        res.cookie('authorization', token);
-        res.cookie('userId', user.id);
-        // res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly:true });
-        // res.cookie('userId', user.id, { sameSite: "none", secure: true});
+        res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly:true });
+        res.cookie('userId', user.id, { sameSite: "none", secure: true});
 
         res.status(200).json(info)
     };
