@@ -106,7 +106,7 @@ var WineController = /** @class */ (function () {
                     food = req.query.food;
                     inpact = req.query.name;
                     id = req.query.id;
-                    regExp4 = /^[가-힣\s]+$/;
+                    regExp4 = /^[가-힣0-9\s]+$/;
                     wine_kr = '';
                     wine_en = '';
                     regExp4.test(inpact) ? wine_kr = inpact : wine_en = inpact;
