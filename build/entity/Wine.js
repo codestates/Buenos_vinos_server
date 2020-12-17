@@ -42,10 +42,12 @@ var Wine = /** @class */ (function (_super) {
         __metadata("design:type", Number)
     ], Wine.prototype, "id", void 0);
     __decorate([
+        typeorm_1.Index({ fulltext: true }),
         typeorm_1.Column(),
         __metadata("design:type", String)
     ], Wine.prototype, "name", void 0);
     __decorate([
+        typeorm_1.Index({ fulltext: true }),
         typeorm_1.Column(),
         __metadata("design:type", String)
     ], Wine.prototype, "name_en", void 0);

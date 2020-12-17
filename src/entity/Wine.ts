@@ -14,7 +14,8 @@ import {
     AfterInsert,
     AfterUpdate,
     ManyToMany,
-    JoinTable
+    JoinTable,
+    Index
 } from 'typeorm';
 
 import { Type } from './Type'
@@ -31,9 +32,11 @@ export class Wine extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Index({ fulltext: true })
     @Column()
     name: string;
 
+    @Index({ fulltext: true })
     @Column()
     name_en: string;
 
