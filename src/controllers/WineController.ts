@@ -55,7 +55,7 @@ class WineController {
         const food = req.query.food
         const inpact :any = req.query.name
         const id = req.query.id
-        var regExp4 = /^[가-힣\s]+$/
+        var regExp4 = /^[가-힣0-9\s]+$/
 
         let wine_kr = ''
         let wine_en = ''
