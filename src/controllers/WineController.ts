@@ -55,12 +55,11 @@ class WineController {
         const food = req.query.food
         const inpact :any = req.query.name
         const id = req.query.id
-        var regExp4 = /^[가-힣]+$/
+        var regExp4 = /^[가-힣\s]+$/
 
         let wine_kr = ''
         let wine_en = ''
         regExp4.test(inpact) ? wine_kr=inpact : wine_en=inpact
-        
         const filteredWine = await getRepository(Wine)
             .createQueryBuilder("wine")
             .leftJoinAndSelect("wine.type", "type")
@@ -70,7 +69,7 @@ class WineController {
             .leftJoinAndSelect("comment.user", "user")
             .leftJoinAndSelect("wine.wishlist", "wishlist")
             .andWhere(id ? 'wine.id = :id' : '1=1', { id: id })
-            .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: `%${wine_kr}%` })
+            .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: `%${wine_kr}%`})
             .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${wine_en}%`})
             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1' , { min_sweet: min_sweet})
             .andWhere(max_sweet ? 'wine.sweet <= :max_sweet' : '1=1' , { max_sweet: max_sweet })
