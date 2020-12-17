@@ -10,4 +10,5 @@ router.post('/login', AuthController.login);
 router.post('/changepw', [checkJwt], AuthController.changePassword);
 
 router.get('/', [checkJwt], AuthController.islogined)
+
 export default router;

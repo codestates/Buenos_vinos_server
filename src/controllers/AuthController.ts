@@ -167,14 +167,14 @@ class AuthController {
         }
         //Send the jwt in the response
         res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly:true });
-        res.cookie('userId', user.id, { sameSite: "none", secure: true, httpOnly: true });
+        res.cookie('userId', user.id, { sameSite: "none", secure: true});
 
 
         res.status(200).json(info)
     };
 
     static islogined = async (req: Request, res: Response) => {
-        res.status(200).json('is logined')
+        res.status(200).end('is logined')
     }
     
     static changePassword = async (req: Request, res: Response) => {
