@@ -90,7 +90,7 @@ var WineController = /** @class */ (function () {
         });
     }); };
     WineController.filteringWine = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, food, inpact, id, regExp4, nameArr, wine_kr, engwine, _i, nameArr_1, key, filteredWine;
+        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, food, inpact, id, regExp4, wine_kr, wine_en, filteredWine;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -107,27 +107,9 @@ var WineController = /** @class */ (function () {
                     inpact = req.query.name;
                     id = req.query.id;
                     regExp4 = /^[가-힣0-9\s]+$/;
-                    nameArr = [];
-                    if (inpact !== undefined) {
-                        nameArr = inpact.split(' ');
-                    }
                     wine_kr = '';
-                    engwine = '';
-                    for (_i = 0, nameArr_1 = nameArr; _i < nameArr_1.length; _i++) {
-                        key = nameArr_1[_i];
-                        if (regExp4.test(key)) {
-                            wine_kr = wine_kr + ' ' + key;
-                        }
-                        else {
-                            engwine = engwine + ' ' + key;
-                        }
-                    }
-                    if (wine_kr === '') {
-                        wine_kr = undefined;
-                    }
-                    if (engwine === '') {
-                        engwine = undefined;
-                    }
+                    wine_en = '';
+                    regExp4.test(inpact) ? wine_kr = inpact : wine_en = inpact;
                     return [4 /*yield*/, typeorm_1.getRepository(Wine_1.Wine)
                             .createQueryBuilder("wine")
                             .leftJoinAndSelect("wine.type", "type")
@@ -137,8 +119,8 @@ var WineController = /** @class */ (function () {
                             .leftJoinAndSelect("comment.user", "user")
                             .leftJoinAndSelect("wine.wishlist", "wishlist")
                             .andWhere(id ? 'wine.id = :id' : '1=1', { id: id })
-                            .andWhere(wine_kr ? "MATCH(wine.name) AGAINST ('" + wine_kr + "' IN BOOLEAN MODE)" : '1=1')
-                            .andWhere(engwine ? "MATCH(wine.name_en) AGAINST ('" + engwine + "' IN BOOLEAN MODE)" : '1=1')
+                            .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: "%" + wine_kr + "%" })
+                            .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1', { name_en: "%" + wine_en + "%" })
                             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1', { min_sweet: min_sweet })
                             .andWhere(max_sweet ? 'wine.sweet <= :max_sweet' : '1=1', { max_sweet: max_sweet })
                             .andWhere(min_acidic ? 'wine.acidic >= :min_acidic' : '1=1', { min_acidic: min_acidic })
@@ -160,8 +142,6 @@ var WineController = /** @class */ (function () {
                             .getMany()];
                 case 1:
                     filteredWine = _a.sent();
-                    wine_kr = '';
-                    engwine = '';
                     res.json(filteredWine);
                     return [2 /*return*/];
             }

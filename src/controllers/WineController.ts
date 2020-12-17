@@ -56,28 +56,11 @@ class WineController {
         const inpact :any = req.query.name
         const id = req.query.id
         var regExp4 = /^[가-힣0-9\s]+$/
-        let nameArr = []
-        if (inpact !== undefined) {
-            nameArr = inpact.split(' ') 
-        }
+
         let wine_kr = ''
-        let engwine = ''
+        let wine_en = ''
 
-        for (let key of nameArr) {
-            if (regExp4.test(key)) {
-                wine_kr = wine_kr + ' ' + key
-            } else {
-                engwine = engwine + ' ' + key
-            }
-        }
-
-        if (wine_kr === '') {
-            wine_kr = undefined
-        }
-        if (engwine === '') {
-            engwine = undefined
-        }
-
+        regExp4.test(inpact) ? wine_kr = inpact : wine_en = inpact;
         const filteredWine = await getRepository(Wine)
             .createQueryBuilder("wine")
             .leftJoinAndSelect("wine.type", "type")
@@ -87,8 +70,8 @@ class WineController {
             .leftJoinAndSelect("comment.user", "user")
             .leftJoinAndSelect("wine.wishlist", "wishlist")
             .andWhere(id ? 'wine.id = :id' : '1=1', { id: id })
-            .andWhere(wine_kr ? `MATCH(wine.name) AGAINST ('${wine_kr}' IN BOOLEAN MODE)` : '1=1')
-            .andWhere(engwine ? `MATCH(wine.name_en) AGAINST ('${engwine}' IN BOOLEAN MODE)` : '1=1')
+            .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: `%${wine_kr}%`})
+            .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1' , { name_en: `%${wine_en}%`})
             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1' , { min_sweet: min_sweet})
             .andWhere(max_sweet ? 'wine.sweet <= :max_sweet' : '1=1' , { max_sweet: max_sweet })
             .andWhere(min_acidic ? 'wine.acidic >= :min_acidic' : '1=1' , { min_acidic: min_acidic})
@@ -109,8 +92,6 @@ class WineController {
             .addSelect("wishlist.id")
             .getMany()
 
-        wine_kr = ''
-        engwine = ''
         res.json(filteredWine)
     }
 }
