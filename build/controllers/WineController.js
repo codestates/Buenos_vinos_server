@@ -90,7 +90,7 @@ var WineController = /** @class */ (function () {
         });
     }); };
     WineController.filteringWine = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, food, inpact, regExp4, wine_kr, wine_en, filteredWine;
+        var max_sweet, min_sweet, min_acidic, max_acidic, min_body, max_body, type, country, rating, food, inpact, id, regExp4, wine_kr, wine_en, filteredWine;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -105,6 +105,7 @@ var WineController = /** @class */ (function () {
                     rating = req.query.rating;
                     food = req.query.food;
                     inpact = req.query.name;
+                    id = req.query.id;
                     regExp4 = /^[가-힣]+$/;
                     wine_kr = '';
                     wine_en = '';
@@ -117,6 +118,7 @@ var WineController = /** @class */ (function () {
                             .leftJoinAndSelect("wine.comment", "comment")
                             .leftJoinAndSelect("comment.user", "user")
                             .leftJoinAndSelect("wine.wishlist", "wishlist")
+                            .andWhere(id ? 'wine.id = :id' : '1=1', { id: id })
                             .andWhere(wine_kr ? 'wine.name LIKE :name' : '1=1', { name: "%" + wine_kr + "%" })
                             .andWhere(wine_en ? 'wine.name_en LIKE :name_en' : '1=1', { name_en: "%" + wine_en + "%" })
                             .andWhere(min_sweet ? 'wine.sweet >= :min_sweet' : '1=1', { min_sweet: min_sweet })
