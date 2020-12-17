@@ -203,7 +203,7 @@ var AuthController = /** @class */ (function () {
                     };
                     //Send the jwt in the response
                     res.cookie('authorization', token, { sameSite: "none", secure: true, httpOnly: true });
-                    res.cookie('userId', user.id, { sameSite: "none", secure: true, httpOnly: true });
+                    res.cookie('userId', user.id, { sameSite: "none", secure: true });
                     res.status(200).json(info);
                     return [2 /*return*/];
             }
@@ -211,7 +211,7 @@ var AuthController = /** @class */ (function () {
     }); };
     AuthController.islogined = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            res.status(200).json('is logined');
+            res.status(200).end('is logined');
             return [2 /*return*/];
         });
     }); };
