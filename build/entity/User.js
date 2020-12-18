@@ -55,6 +55,9 @@ var User = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column(),
         class_validator_1.Length(4, 100),
+        typeorm_1.Column({
+            nullable: true
+        }),
         __metadata("design:type", String)
     ], User.prototype, "password", void 0);
     __decorate([
